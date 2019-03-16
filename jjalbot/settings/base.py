@@ -61,7 +61,8 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-LOGIN_REDIRECT_URL = '/admin'
+LOGIN_URL = '/jjalbot/accounts/login'
+LOGIN_REDIRECT_URL = '/jjalbot/admin'
 
 SITE_ID = 3
 
