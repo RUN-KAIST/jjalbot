@@ -7,10 +7,10 @@ from .models import BigEmoji
 
 class BigEmojiAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ['author', 'image']}),
+        (None, {'fields': ['author', 'emoji_name', 'image']}),
     ]
-    list_display = ('author', 'image', 'date_created', 'was_created_recently')
-    list_filter = ['date_created']
+    list_display = ('author', 'emoji_name', 'image', 'date_created', 'was_created_recently')
+    list_filter = ['date_created', 'author']
 
 
 admin.site.register(BigEmoji, BigEmojiAdmin)

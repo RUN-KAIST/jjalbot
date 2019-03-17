@@ -50,9 +50,6 @@ INSTALLED_APPS = [
     'bigemoji.slack',
 ]
 
-MEDIA_ROOT = '/Users/joonhyungshin/workspace/media'
-MEDIA_URL = '/media/'
-
 AUTHENTICATION_BACKENDS = (
     # Needed to login by username in Django admin, regardless of `allauth`
     'django.contrib.auth.backends.ModelBackend',
@@ -63,7 +60,7 @@ AUTHENTICATION_BACKENDS = (
 
 LOGIN_URL = '/jjalbot/accounts/login'
 LOGIN_REDIRECT_URL = '/jjalbot/admin'
-ACCOUNT_LOGOUT_REDIRECT_URL = '/jjalbout/'
+ACCOUNT_LOGOUT_REDIRECT_URL = '/jjalbot/'
 
 SITE_ID = 3
 
