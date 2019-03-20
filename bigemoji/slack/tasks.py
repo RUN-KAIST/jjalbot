@@ -6,7 +6,7 @@ import datetime
 
 
 @shared_task
-def upload_bigemoji(channel_id, bigemoji_pk, token_pk, response_url):
+def upload_bigemoji(channel_id, bigemoji_pk, token_pk, response_url, delete_eta):
     from ..models import BigEmoji
     from .models import SlackToken
 
@@ -46,7 +46,7 @@ def upload_bigemoji(channel_id, bigemoji_pk, token_pk, response_url):
                 if channel_id in channel_info:
                     timestamp = min(map(lambda info: info.get('ts', ''), channel_info[channel_id]))
                     break
-            delete_bigemoji.apply_async(eta=datetime.datetime.now() + datetime.timedelta(seconds=30),
+            delete_bigemoji.apply_async(eta=datetime.datetime.now() + datetime.timedelta(seconds=delete_eta),
                                         args=[
                                             channel_id,
                                             timestamp,

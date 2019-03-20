@@ -62,6 +62,8 @@ LOGIN_URL = '/jjalbot/accounts/login'
 LOGIN_REDIRECT_URL = '/jjalbot/admin'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/jjalbot/'
 
+BIGEMOJI_DELETE_ETA = 3600
+
 SITE_ID = 3
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
