@@ -80,14 +80,6 @@ def delete_bigemoji(channel_id, timestamp, file_id, bigemoji_pk, token_pk):
         }
 
         requests.post(
-            'https://slack.com/api/files.delete',
-            headers=headers,
-            data={
-                'file': file_id
-            }
-        )
-
-        requests.post(
             'https://slack.com/api/chat.update',
             headers=headers,
             data={
@@ -95,6 +87,14 @@ def delete_bigemoji(channel_id, timestamp, file_id, bigemoji_pk, token_pk):
                 'text': '[BigEmoji:{}]'.format(bigemoji.emoji_name),
                 'ts': timestamp,
                 'as_user': True
+            }
+        )
+
+        requests.post(
+            'https://slack.com/api/files.delete',
+            headers=headers,
+            data={
+                'file': file_id
             }
         )
     except (BigEmoji.DoesNotExist, SlackToken.DoesNotExist, ValueError):
