@@ -81,20 +81,16 @@ class SlackOAuth2Adapter(OAuth2Adapter):
 
     access_token_url = 'https://slack.com/api/oauth.access'
     authorize_url = 'https://slack.com/oauth/authorize'
-    auth_test_url = 'https://slack.com/api/auth.test'
     identity_url = 'https://slack.com/api/users.identity'
 
     def complete_login(self, request, app, token, **kwargs):
-        extra_data = self.get_data(self.get_provider().get_scope(request), token.token)
+        extra_data = self.get_data(token.token)
         return self.get_provider().sociallogin_from_response(request,
                                                              extra_data)
 
-    def get_data(self, scopes, token):
-        identifiable = 'identity.basic' in scopes
-        api_url = self.identity_url if identifiable else self.auth_test_url
-
+    def get_data(self, token):
         resp = requests.get(
-            api_url,
+            self.identity_url,
             params={'token': token}
         )
 
@@ -104,24 +100,11 @@ class SlackOAuth2Adapter(OAuth2Adapter):
             raise OAuth2Error()
 
         # Fill in their generic info
-        if identifiable:
-            info = {
-                'name': resp.get('user').get('name'),
-                'user': resp.get('user'),
-                'team': resp.get('team')
-            }
-        else:
-            info = {
-                'name': resp.get('user'),
-                'user': {
-                    'name': resp.get('user'),
-                    'id': resp.get('user_id')
-                },
-                'team': {
-                    'name': resp.get('team'),
-                    'id': resp.get('team_id')
-                }
-            }
+        info = {
+            'name': resp.get('user').get('name'),
+            'user': resp.get('user'),
+            'team': resp.get('team')
+        }
 
         return info
 
