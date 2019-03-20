@@ -25,7 +25,7 @@ def upload_bigemoji(channel_id, bigemoji_pk, token_pk, response_url, delete_eta)
         # Remove non-asciis from filename
         files = {
             'file': (
-                re.sub(r'[^\x00-\x7f]', r'', os.path.basename(bigemoji.image.name)),
+                re.sub(r'[^\x00-\x7f]', r'_', os.path.basename(bigemoji.image.name)),
                 bigemoji.image
             )
         }
