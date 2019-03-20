@@ -57,9 +57,11 @@ def index(request):
                 account = SocialAccount.objects.get(uid='{}_{}'.format(team_id, user_id))
                 token = SlackToken.objects.filter(Q(account=account),
                                                   Q(scopes__contains='files:write:user'),
+                                                  Q(scopes__contains='chat:write:user'),
                                                   Q(expires_at__lte=timezone.now())
                                                   | Q(expires_at=None))[0:1].get()
-                upload_bigemoji.delay(channel_id, bigemoji.pk, token.pk, response_url)
+                delete_eta = settings.BIGEMOJI_DELETE_ETA
+                upload_bigemoji.delay(channel_id, bigemoji.pk, token.pk, response_url, delete_eta)
                 return HttpResponse()
             except BigEmoji.DoesNotExist:
                 error_msg = 'There is no such emoji!'
