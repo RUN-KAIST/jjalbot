@@ -21,6 +21,24 @@
 {% if form_error %}
     {{ form_error }}
 {% endif %}
+
+{% url 'bigemoji:index' as default_url %}
+
+To use Slack slash command,
+<a href="{% provider_login_url "slack" process="redirect" next=default_url scope="files:write:user,chat:write:user" %}">
+    please grant us file upload and chat update permissions.
+</a>
+
+<p>{% blocktrans %}Not installed in your workspace? Consider:{% endblocktrans %}</p>
+
+{% url 'bigemoji:index' as default_url %}
+
+<a href="{% provider_login_url "slack" process="redirect" next=default_url scope="bot,commands" %}">
+    <img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" />
+</a>
+
+<br /><br />
+
 <form enctype="multipart/form-data" method="post">
     {% csrf_token %}
     {{ form }}
@@ -43,13 +61,5 @@
     </tr>
 {% endfor %}
 </table>
-
-<p>{% blocktrans %}Not installed in your workspace? Consider:{% endblocktrans %}</p>
-
-{% url 'bigemoji:index' as default_url %}
-
-<a href="{% provider_login_url "slack" process="redirect" next=default_url scope="bot,commands" %}">
-    <img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" />
-</a>
 
 {% endblock %}
