@@ -1,21 +1,24 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    <h1>Hello!</h1>
-    {% if error_msg %}
-        <p><strong>{{ error_msg }}</strong></p>
-    {% endif %}
-    {% if form_error %}
-        {{ form_error }}
-    {% endif %}
-    <form enctype="multipart/form-data" method="post">
-        {% csrf_token %}
-        {{ form }}
-        <input type="submit" value="Submit" />
-    </form>
-</body>
-</html>
+{% extends "account/base.html" %}
+
+{% load i18n %}
+{% load account socialaccount %}
+
+{% block head_title %}{% trans "Big Emoji" %}{% endblock %}
+
+{% block content %}
+
+<h1>Hello!</h1>
+
+{% if error_msg %}
+    <p><strong>{{ error_msg }}</strong></p>
+{% endif %}
+{% if form_error %}
+    {{ form_error }}
+{% endif %}
+<form enctype="multipart/form-data" method="post">
+    {% csrf_token %}
+    {{ form }}
+    <input type="submit" value="Submit" />
+</form>
+
+{% endblock %}
