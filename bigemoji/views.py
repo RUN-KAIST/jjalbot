@@ -22,7 +22,7 @@ def index(request):
             return HttpResponseRedirect(reverse('bigemoji:index'))
 
         empty_form = BigEmojiForm()
-        bigemojis = BigEmoji.objects.filter(team_id=team_id)
+        bigemojis = BigEmoji.objects.filter(team_id=team_id).order_by('-date_created')
 
         return render(request, 'bigemoji/index.html', {
             'form': empty_form,
