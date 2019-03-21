@@ -15,7 +15,9 @@
 
 <div class="socialaccount_ballot">
 
-  <a href="{% provider_login_url "slack" next="/jjalbot/" scope="identity.basic,identity.email,identity.team,identity.avatar" %}">
+  {% url 'bigemoji:index' as default_url %}
+
+  <a href="{% provider_login_url "slack" process="login" next=default_url scope="identity.basic,identity.email,identity.team,identity.avatar" %}">
     <img src="https://api.slack.com/img/sign_in_with_slack.png" />
   </a>
 

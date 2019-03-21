@@ -5,5 +5,5 @@ from . import views
 app_name = 'bigemoji'
 urlpatterns = [
     path('', views.index, name='index'),
-    path('app/', include('bigemoji.slack.urls'), name='app')
+    path('app/', include('bigemoji.slack.urls'))
 ]

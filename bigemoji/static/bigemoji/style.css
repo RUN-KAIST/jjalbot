@@ -1,0 +1,18 @@
+img.bigemoji {
+    max-height: 50px;
+    height: auto;
+    width: auto;
+}
+
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+table {
+    width: 100%;
+}
+
+th, td {
+    text-align: center;
+}
