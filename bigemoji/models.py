@@ -36,6 +36,7 @@ class BigEmoji(models.Model):
 
 class BigEmojiAlias(models.Model):
     author = models.ForeignKey(SocialAccount, on_delete=models.CASCADE)
+    team_id = models.CharField(max_length=10)
     bigemoji = models.ForeignKey(BigEmoji, on_delete=models.CASCADE)
     alias_name = models.CharField(max_length=100)
 
