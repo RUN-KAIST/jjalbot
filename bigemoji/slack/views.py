@@ -53,7 +53,7 @@ def index(request):
             response_url = request.POST.get('response_url')
 
             try:
-                bigemoji = BigEmoji.objects.get(emoji_name=bigemoji_name)
+                bigemoji = BigEmoji.objects.get(team_id=team_id, emoji_name=bigemoji_name)
                 account = SocialAccount.objects.get(uid='{}_{}'.format(team_id, user_id))
                 token = SlackToken.objects.filter(Q(account=account),
                                                   Q(scopes__contains='files:write:user'),
