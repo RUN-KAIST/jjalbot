@@ -26,14 +26,18 @@
 
 <p>
     <a href="{% provider_login_url "slack" process="connect" next=default_url scope="identity.basic,identity.email,identity.team,identity.avatar" %}">
-        Signup to another workspace
+        Sign in to another workspace
     </a>
 </p>
 
 <form action="{{ default_url }}" method="get">
     <select name="uid">
     {% for account in account_set %}
+        {% if account == account_user %}
+        <option value="{{ account.uid }}" selected>{{ account.uid }}</option>
+        {% else %}
         <option value="{{ account.uid }}">{{ account.uid }}</option>
+        {% endif %}
     {% endfor %}
     </select>
     <input type="submit" value="Change account" />
