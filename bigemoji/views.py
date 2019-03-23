@@ -43,6 +43,7 @@ def bigemoji(request, team_id, user_id):
             'form': empty_form,
             'account_set': account_set,
             'account_user': account,
+            'team_id': team_id,
             'bigemojis': bigemojis,
         })
 
