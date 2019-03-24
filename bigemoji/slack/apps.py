@@ -1,9 +1,9 @@
 from django.apps import AppConfig
 
 from allauth.account.signals import user_signed_up
-from allauth.socialaccount.signals import pre_social_login
+from allauth.socialaccount.signals import pre_social_login, social_account_added
 
-from .signals import save_slack_token
+from .signals import save_slack_token, save_slack_data
 
 
 class SlackConfig(AppConfig):
@@ -16,3 +16,5 @@ class SlackConfig(AppConfig):
         # in for the first time.
         user_signed_up.connect(save_slack_token)
 
+        social_account_added.connect(save_slack_data)
+        user_signed_up.connect(save_slack_data)

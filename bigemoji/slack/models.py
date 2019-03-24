@@ -1,5 +1,8 @@
+import datetime
+
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 from allauth.socialaccount.fields import JSONField
 from allauth.socialaccount.models import SocialAccount, SocialApp
@@ -14,9 +17,17 @@ class SlackTeam(models.Model):
     max_size = models.IntegerField(default=settings.BIGEMOJI_MAX_SPACE)
     delete_eta = models.IntegerField(default=settings.BIGEMOJI_DELETE_ETA)
     extra_data = JSONField(default=dict)
+    date_created = models.DateTimeField(auto_now=True, verbose_name='date created')
 
     def __str__(self):
         return '{}.slack.com'.format(self.domain)
+
+    def was_created_recently(self):
+        now = timezone.now()
+        return now - datetime.timedelta(days=1) <= self.date_created <= now
+    was_created_recently.admin_order_field = 'date_created'
+    was_created_recently.boolean = True
+    was_created_recently.short_description = 'Created recently?'
 
 
 class SlackAccount(models.Model):
@@ -26,12 +37,20 @@ class SlackAccount(models.Model):
     team = models.ForeignKey(SlackTeam, on_delete=models.CASCADE)
     slack_user_id = models.CharField(max_length=settings.SLACK_USER_ID_MAX)
     extra_data = JSONField(default=dict)
+    date_created = models.DateTimeField(auto_now=True, verbose_name='date created')
 
     class Meta:
         unique_together = (('team', 'slack_user_id'),)
 
     def __str__(self):
         return self.account.__str__()
+
+    def was_created_recently(self):
+        now = timezone.now()
+        return now - datetime.timedelta(days=1) <= self.date_created <= now
+    was_created_recently.admin_order_field = 'date_created'
+    was_created_recently.boolean = True
+    was_created_recently.short_description = 'Created recently?'
 
 
 class SlackToken(models.Model):
