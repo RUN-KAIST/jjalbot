@@ -60,7 +60,6 @@
 
 <form enctype="multipart/form-data" method="post">
     {% csrf_token %}
-    {{ uid_field }}
     {{ form }}
     <input type="submit" value="Submit" />
 </form>
@@ -69,13 +68,13 @@
 
 <table>
     <tr>
-        <th>Author</th>
+        <th>Owner</th>
         <th>Name</th>
         <th>Big Emoji</th>
     </tr>
 {% for bigemoji in bigemojis %}
     <tr>
-        <td>{{ bigemoji.author }}</td>
+        <td>{{ bigemoji.owner }}</td>
         <td>{{ bigemoji.emoji_name }}</td>
         <td><img class="bigemoji" src="{{ bigemoji.image.url }}" /></td>
     </tr>

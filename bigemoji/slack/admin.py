@@ -1,6 +1,17 @@
 from django.contrib import admin
 
-from .models import SlackToken
+from .models import SlackToken, SlackTeam, SlackAccount
+
+
+class SlackTeamAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name', 'domain', 'verified', 'size', 'max_size', 'delete_eta',)
+    list_filter = ('verified',)
+
+
+class SlackAccountAdmin(admin.ModelAdmin):
+    raw_id_fields = ('account',)
+    list_display = ('account', 'team', 'slack_user_id',)
+    list_filter = ('team',)
 
 
 class SlackTokenAdmin(admin.ModelAdmin):
@@ -25,4 +36,6 @@ class SlackTokenAdmin(admin.ModelAdmin):
     truncated_token.short_description = 'SlackToken'
 
 
+admin.site.register(SlackTeam, SlackTeamAdmin)
 admin.site.register(SlackToken, SlackTokenAdmin)
+admin.site.register(SlackAccount, SlackAccountAdmin)
