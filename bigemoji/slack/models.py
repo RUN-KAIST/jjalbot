@@ -29,6 +29,16 @@ class SlackTeam(models.Model):
     was_created_recently.boolean = True
     was_created_recently.short_description = 'Created recently?'
 
+    def occupied(self):
+        from ..models import BigEmoji
+
+        total_size = 0
+        bigemojis = BigEmoji.objects.filter(team=self)
+        for bigemoji in bigemojis:
+            total_size += bigemoji.image.size
+
+        return total_size
+
 
 class SlackAccount(models.Model):
     account = models.OneToOneField(SocialAccount,

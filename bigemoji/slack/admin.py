@@ -4,14 +4,14 @@ from .models import SlackToken, SlackTeam, SlackAccount
 
 
 class SlackTeamAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'domain', 'verified', 'size', 'max_size', 'was_created_recently',)
+    list_display = ('id', 'name', 'domain', 'verified', 'occupied', 'max_size', 'was_created_recently',)
     list_filter = ('verified',)
 
 
 class SlackAccountAdmin(admin.ModelAdmin):
     raw_id_fields = ('account',)
     list_display = ('account', 'team', 'slack_user_id', 'was_created_recently')
-    list_filter = ('team',)
+    list_filter = ('team', 'account__date_joined')
 
 
 class SlackTokenAdmin(admin.ModelAdmin):
