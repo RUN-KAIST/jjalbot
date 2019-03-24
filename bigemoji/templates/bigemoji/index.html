@@ -25,7 +25,7 @@
 {% url 'bigemoji:index' as default_url %}
 
 <p>
-    <a href="{% provider_login_url "slack" process="connect" next=default_url scope="identity.basic,identity.email,identity.team,identity.avatar" %}">
+    <a href="{% provider_login_url "slack" process="connect" next=default_url scope=slack_login_scope %}">
         Sign in to another workspace
     </a>
 </p>
@@ -34,9 +34,9 @@
     <select name="uid">
     {% for account in account_set %}
         {% if account == account_user %}
-        <option value="{{ account.uid }}" selected>{{ account.uid }}</option>
+        <option value="{{ account.team.id }}_{{ account.slack_user_id }}" selected>{{ account.team.domain }} - {{ account.account.user.username }}</option>
         {% else %}
-        <option value="{{ account.uid }}">{{ account.uid }}</option>
+        <option value="{{ account.team.id }}_{{ account.slack_user_id }}">{{ account.team.domain }} - {{ account.account.user.username }}</option>
         {% endif %}
     {% endfor %}
     </select>

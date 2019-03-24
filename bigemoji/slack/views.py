@@ -5,7 +5,8 @@ from django.http import JsonResponse, HttpResponseForbidden, HttpResponse
 from django.utils import timezone
 from django.db.models import Q
 
-from allauth.socialaccount.models import SocialAccount
+from allauth.socialaccount.helpers import render_authentication_error
+from allauth.socialaccount.providers.base import AuthError
 from allauth.socialaccount.providers.oauth2.client import OAuth2Error
 from allauth.socialaccount.providers.oauth2.views import (
     OAuth2Adapter,
@@ -19,7 +20,7 @@ import shlex
 import requests
 
 from .tasks import upload_bigemoji
-from .models import SlackToken
+from .models import SlackToken, SlackAccount, SlackTeam
 from .provider import SlackProvider
 from ..models import BigEmoji
 
@@ -47,25 +48,26 @@ def index(request):
         cmd_args = shlex.split(request.POST.get('text'))
         if len(cmd_args) == 1:
             bigemoji_name = cmd_args[0]
-            user_id = request.POST.get('user_id')
+            slack_user_id = request.POST.get('user_id')
             team_id = request.POST.get('team_id')
             channel_id = request.POST.get('channel_id')
             response_url = request.POST.get('response_url')
 
             try:
-                bigemoji = BigEmoji.objects.get(team_id=team_id, emoji_name=bigemoji_name)
-                account = SocialAccount.objects.get(uid='{}_{}'.format(team_id, user_id))
-                token = SlackToken.objects.filter(Q(account=account),
+                team = SlackTeam.objects.get(pk=team_id)
+                bigemoji = BigEmoji.objects.get(team=team, emoji_name=bigemoji_name)
+                account = SlackAccount.objects.get(team=team, slack_user_id=slack_user_id)
+                token = SlackToken.objects.filter(Q(account=account.account),
                                                   Q(scopes__contains='files:write:user'),
                                                   Q(scopes__contains='chat:write:user'),
                                                   Q(expires_at__lte=timezone.now())
                                                   | Q(expires_at=None))[0:1].get()
-                delete_eta = settings.BIGEMOJI_DELETE_ETA
+                delete_eta = team.delete_eta
                 upload_bigemoji.delay(channel_id, bigemoji.pk, token.pk, response_url, delete_eta)
                 return HttpResponse()
             except BigEmoji.DoesNotExist:
                 error_msg = 'There is no such emoji!'
-            except (SocialAccount.DoesNotExist, SlackToken.DoesNotExist):
+            except (SlackTeam.DoesNotExist, SlackAccount.DoesNotExist, SlackToken.DoesNotExist):
                 error_msg = 'Please visit `http://run.kaist.ac.kr/jjalbot/`.'
         else:
             error_msg = 'The command should contain exactly 1 argument.'
@@ -111,5 +113,19 @@ class SlackOAuth2Adapter(OAuth2Adapter):
         return info
 
 
-oauth2_login = OAuth2LoginView.adapter_view(SlackOAuth2Adapter)
+class SlackLoginView(OAuth2LoginView):
+    def dispatch(self, request, *args, **kwargs):
+        provider = self.adapter.get_provider()
+        if request.GET.get('process', '') in ('login', 'connect'):
+            if request.GET.get('scope', '') != settings.SLACK_LOGIN_SCOPE:
+                return render_authentication_error(
+                    request,
+                    provider.id,
+                    error=AuthError.DENIED
+                )
+
+        return super(SlackLoginView, self).dispatch(request, *args, **kwargs)
+
+
+oauth2_login = SlackLoginView.adapter_view(SlackOAuth2Adapter)
 oauth2_callback = OAuth2CallbackView.adapter_view(SlackOAuth2Adapter)

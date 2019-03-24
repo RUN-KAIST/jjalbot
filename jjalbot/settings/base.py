@@ -63,7 +63,7 @@ LOGIN_REDIRECT_URL = '/jjalbot/admin'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/jjalbot/'
 
 BIGEMOJI_MAX_SPACE = 10000000
-BIGEMOJI_DELETE_ETA = 3600
+BIGEMOJI_DELETE_ETA = 604800
 
 SITE_ID = 3
 
@@ -71,6 +71,8 @@ SLACK_TEAM_ID_MAX = 10
 SLACK_TEAM_NAME_MAX = 255
 SLACK_TEAM_DOMAIN_MAX = 21
 SLACK_USER_ID_MAX = 10
+
+SLACK_LOGIN_SCOPE = 'identity.basic,identity.email,identity.team,identity.avatar'
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -101,6 +103,8 @@ TEMPLATES = [
 
                 # `allauth` needs this from django
                 'django.template.context_processors.request',
+
+                'bigemoji.slack.context_processors.login_scope',
             ],
         },
     },
