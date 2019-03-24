@@ -49,32 +49,35 @@ def save_slack_data(sender, **kwargs):
         sociallogin = kwargs['sociallogin']
 
         assert isinstance(sociallogin, SocialLogin)
-        assert sociallogin.is_existing
 
-        account = sociallogin.account
-        user_data = account.extra_data.get('user', {})
-        team_data = account.extra_data.get('team', {})
+        if sociallogin.is_existing:
+            app = sociallogin.token.app
 
-        # TODO: Handle race conditions...
-        try:
-            team = SlackTeam.objects.get(pk=team_data.get('id', ''))
-        except SlackTeam.DoesNotExist:
-            team = SlackTeam()
+            if app.provider == 'slack':
+                account = sociallogin.account
+                user_data = account.extra_data.get('user', {})
+                team_data = account.extra_data.get('team', {})
 
-        team.id = team_data.get('id')
-        team.name = team_data.get('name', '')
-        team.domain = team_data.get('domain', '')
-        team.extra_data = team_data
-        team.save()
+                # TODO: Handle race conditions...
+                try:
+                    team = SlackTeam.objects.get(pk=team_data.get('id', ''))
+                except SlackTeam.DoesNotExist:
+                    team = SlackTeam()
 
-        # TODO: Handle race conditions...
-        try:
-            slack_account = SlackAccount.objects.get(account=account)
-        except SlackAccount.DoesNotExist:
-            slack_account = SlackAccount()
+                team.id = team_data.get('id')
+                team.name = team_data.get('name', '')
+                team.domain = team_data.get('domain', '')
+                team.extra_data = team_data
+                team.save()
 
-        slack_account.account = account
-        slack_account.slack_user_id = user_data.get('id', '')
-        slack_account.team = team
-        slack_account.extra_data = user_data
-        slack_account.save()
+                # TODO: Handle race conditions...
+                try:
+                    slack_account = SlackAccount.objects.get(account=account)
+                except SlackAccount.DoesNotExist:
+                    slack_account = SlackAccount()
+
+                slack_account.account = account
+                slack_account.slack_user_id = user_data.get('id', '')
+                slack_account.team = team
+                slack_account.extra_data = user_data
+                slack_account.save()
