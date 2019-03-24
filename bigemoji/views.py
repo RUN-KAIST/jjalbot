@@ -1,5 +1,7 @@
 from django.shortcuts import render
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.db import IntegrityError
 from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.urls import reverse
 
@@ -37,8 +39,24 @@ def bigemoji(request, team_id, slack_user_id):
         if request.method == 'POST':
             bigemoji = BigEmoji(owner=account, team=team)
             form = BigEmojiForm(request.POST, request.FILES, instance=bigemoji)
-            form.save()
-            return HttpResponseRedirect(reverse('bigemoji:bigemoji', args=(team.id, slack_user_id)))
+
+            # TODO: Handle race conditions...
+            if team.verified and team.occupied() + request.FILES.get('image').size <= team.max_size:
+                try:
+                    form.save()
+                    return HttpResponseRedirect(reverse('bigemoji:bigemoji', args=(team.id, slack_user_id)))
+                except IntegrityError:
+                    messages.add_message(
+                        request,
+                        messages.ERROR,
+                        'A BigEmoji with that name already exists.'
+                    )
+            else:
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    'You cannot add BigEmoji to this workspace. Please contact the administrators.'
+                )
 
         empty_form = BigEmojiForm()
         bigemojis = BigEmoji.objects.filter(team_id=team.id).order_by('-date_created')
@@ -51,5 +69,6 @@ def bigemoji(request, team_id, slack_user_id):
             'bigemojis': bigemojis,
         })
 
-    except (SlackTeam.DoesNotExist, SlackAccount.DoesNotExist, ValueError):
+    except (SlackTeam.DoesNotExist, SlackAccount.DoesNotExist, ValueError) as e:
+        print(e)
         return HttpResponseNotFound()

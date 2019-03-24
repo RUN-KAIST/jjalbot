@@ -22,6 +22,7 @@ def save_slack_token(sender, **kwargs):
                 account = sociallogin.account
                 scopes = sociallogin.state.get('scope', '')
 
+                # TODO: Handle race conditions...
                 try:
                     slack_token = SlackToken.objects.get(app=app, account=account, scopes=scopes)
                 except SlackToken.DoesNotExist:
@@ -54,6 +55,7 @@ def save_slack_data(sender, **kwargs):
         user_data = account.extra_data.get('user', {})
         team_data = account.extra_data.get('team', {})
 
+        # TODO: Handle race conditions...
         try:
             team = SlackTeam.objects.get(pk=team_data.get('id', ''))
         except SlackTeam.DoesNotExist:
@@ -65,6 +67,7 @@ def save_slack_data(sender, **kwargs):
         team.extra_data = team_data
         team.save()
 
+        # TODO: Handle race conditions...
         try:
             slack_account = SlackAccount.objects.get(account=account)
         except SlackAccount.DoesNotExist:

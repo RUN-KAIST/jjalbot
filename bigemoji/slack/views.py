@@ -68,7 +68,7 @@ def index(request):
             except BigEmoji.DoesNotExist:
                 error_msg = 'There is no such emoji!'
             except (SlackTeam.DoesNotExist, SlackAccount.DoesNotExist, SlackToken.DoesNotExist):
-                error_msg = 'Please visit `http://run.kaist.ac.kr/jjalbot/`.'
+                error_msg = 'You should grant us some permissions. Please visit `https://run.kaist.ac.kr/jjalbot/`.'
         else:
             error_msg = 'The command should contain exactly 1 argument.'
 
