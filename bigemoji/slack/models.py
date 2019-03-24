@@ -1,5 +1,37 @@
+from django.conf import settings
 from django.db import models
+
+from allauth.socialaccount.fields import JSONField
 from allauth.socialaccount.models import SocialAccount, SocialApp
+
+
+class SlackTeam(models.Model):
+    id = models.CharField(max_length=settings.SLACK_TEAM_ID_MAX, primary_key=True)
+    name = models.CharField(max_length=settings.SLACK_TEAM_NAME_MAX)
+    domain = models.CharField(max_length=settings.SLACK_TEAM_DOMAIN_MAX, unique=True)
+    verified = models.BooleanField(default=False)
+    size = models.IntegerField(default=0)
+    max_size = models.IntegerField(default=settings.BIGEMOJI_MAX_SPACE)
+    delete_eta = models.IntegerField(default=settings.BIGEMOJI_DELETE_ETA)
+    extra_data = JSONField(default=dict)
+
+    def __str__(self):
+        return '{}.slack.com'.format(self.domain)
+
+
+class SlackAccount(models.Model):
+    account = models.OneToOneField(SocialAccount,
+                                   on_delete=models.CASCADE,
+                                   primary_key=True)
+    team = models.ForeignKey(SlackTeam, on_delete=models.CASCADE)
+    slack_user_id = models.CharField(max_length=settings.SLACK_USER_ID_MAX)
+    extra_data = JSONField(default=dict)
+
+    class Meta:
+        unique_together = (('team', 'slack_user_id'),)
+
+    def __str__(self):
+        return self.account.__str__()
 
 
 class SlackToken(models.Model):

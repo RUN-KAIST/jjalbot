@@ -2,26 +2,27 @@ import datetime
 
 from django.db import models
 from django.utils import timezone
-from allauth.socialaccount.models import SocialAccount
+
+from .slack.models import SlackTeam, SlackAccount
 
 # Create your models here.
 
 
 def team_directory(instance, filename):
-    return '{}/{}_{}'.format(instance.team_id,
+    return '{}/{}_{}'.format(instance.team.id,
                              instance.emoji_name,
                              filename)
 
 
 class BigEmoji(models.Model):
-    author = models.ForeignKey(SocialAccount, on_delete=models.CASCADE)
-    team_id = models.CharField(max_length=10)
+    owner = models.ForeignKey(SlackAccount, on_delete=models.CASCADE)
+    team = models.ForeignKey(SlackTeam, on_delete=models.CASCADE)
     emoji_name = models.CharField(max_length=100)
     image = models.ImageField(upload_to=team_directory)
     date_created = models.DateTimeField(auto_now=True, verbose_name='date created')
 
     class Meta:
-        unique_together = (('team_id', 'emoji_name'),)
+        unique_together = (('team', 'emoji_name'),)
 
     def __str__(self):
         return self.emoji_name
@@ -35,10 +36,13 @@ class BigEmoji(models.Model):
 
 
 class BigEmojiAlias(models.Model):
-    author = models.ForeignKey(SocialAccount, on_delete=models.CASCADE)
-    team_id = models.CharField(max_length=10)
+    owner = models.ForeignKey(SlackAccount, on_delete=models.CASCADE)
+    team = models.ForeignKey(SlackTeam, on_delete=models.CASCADE)
     bigemoji = models.ForeignKey(BigEmoji, on_delete=models.CASCADE)
     alias_name = models.CharField(max_length=100)
+
+    class Meta:
+        unique_together = (('team', 'alias_name'),)
 
     def __str__(self):
         return self.alias_name
