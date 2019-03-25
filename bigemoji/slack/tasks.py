@@ -1,41 +1,41 @@
+from django.db.models import Q
+from django.utils import timezone
+
 from celery import shared_task
-import requests
 import re
 import os
 import datetime
 
+from .utils import slack_delayed_response, slack_api_call
+
 
 @shared_task
-def upload_bigemoji(channel_id, bigemoji_pk, token_pk, response_url, delete_eta):
+def upload_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, response_url):
     from ..models import BigEmoji
-    from .models import SlackToken
+    from .models import SlackTeam, SlackAccount, SlackToken
 
     try:
-        bigemoji = BigEmoji.objects.get(pk=bigemoji_pk)
-        token = SlackToken.objects.get(pk=token_pk)
+        team = SlackTeam.objects.get(pk=team_id)
+        bigemoji = BigEmoji.objects.get(team=team, emoji_name=bigemoji_name)
+        account = SlackAccount.objects.get(team=team, slack_user_id=slack_user_id)
+        token = SlackToken.objects.filter(Q(account=account.account),
+                                          Q(scopes__contains='files:write:user'),
+                                          Q(scopes__contains='chat:write:user'),
+                                          Q(expires_at__lte=timezone.now())
+                                          | Q(expires_at=None))[0:1].get()
+        delete_eta = team.delete_eta
 
-        headers = {
-            'Authorization': 'Bearer {}'.format(token.token)
-        }
-        body = {
-            'channels': channel_id,
-            'title': bigemoji.emoji_name
-        }
-
-        # Remove non-asciis from filename
-        files = {
-            'file': (
+        resp_json = slack_api_call(
+            'files.upload',
+            token.token,
+            channels=channel_id,
+            file=(
+                # Remove non-asciis from filename
                 re.sub(r'[^\x00-\x7f]', r'_', os.path.basename(bigemoji.image.name)),
                 bigemoji.image
-            )
-        }
-
-        resp_json = requests.post(
-            'https://slack.com/api/files.upload',
-            headers=headers,
-            data=body,
-            files=files
-        ).json()
+            ),
+            title=bigemoji.emoji_name
+        )
 
         if resp_json.get('ok'):
             file_info = resp_json.get('file')
@@ -51,19 +51,20 @@ def upload_bigemoji(channel_id, bigemoji_pk, token_pk, response_url, delete_eta)
                                             channel_id,
                                             timestamp,
                                             file_id,
-                                            bigemoji_pk,
-                                            token_pk
+                                            bigemoji.pk,
+                                            token.pk
                                         ])
         else:
-            requests.post(response_url, json={
-                'response_type': 'ephemeral',
-                'text': 'Something went wrong. Please try again!'
-            })
-    except (BigEmoji.DoesNotExist, SlackToken.DoesNotExist, ValueError):
-        requests.post(response_url, json={
-            'response_type': 'ephemeral',
-            'text': 'Something went wrong. Please try again!'
-        })
+            slack_delayed_response(response_url, 'Something went wrong. Please try again!')
+
+    except BigEmoji.DoesNotExist:
+        slack_delayed_response(response_url, 'That emoji does not exist!')
+    except (SlackTeam.DoesNotExist, SlackAccount.DoesNotExist, SlackToken.DoesNotExist) as e:
+        print(e)
+        slack_delayed_response(response_url, 'You should grant us some permissions. '
+                                             'Please visit `https://run.kaist.ac.kr/jjalbot/`.')
+    except ValueError:
+        slack_delayed_response(response_url, 'Something went wrong. Please try again!')
 
 
 @shared_task
@@ -75,27 +76,19 @@ def delete_bigemoji(channel_id, timestamp, file_id, bigemoji_pk, token_pk):
         bigemoji = BigEmoji.objects.get(pk=bigemoji_pk)
         token = SlackToken.objects.get(pk=token_pk)
 
-        headers = {
-            'Authorization': 'Bearer {}'.format(token.token)
-        }
-
-        requests.post(
-            'https://slack.com/api/chat.update',
-            headers=headers,
-            data={
-                'channel': channel_id,
-                'text': '[BigEmoji:{}]'.format(bigemoji.emoji_name),
-                'ts': timestamp,
-                'as_user': True
-            }
+        slack_api_call(
+            'chat.update',
+            token.token,
+            channel=channel_id,
+            text='[BigEmoji:{}]'.format(bigemoji.emoji_name),
+            ts=timestamp,
+            as_user=True
         )
 
-        requests.post(
-            'https://slack.com/api/files.delete',
-            headers=headers,
-            data={
-                'file': file_id
-            }
+        slack_api_call(
+            'files.delete',
+            token.token,
+            file=file_id
         )
     except (BigEmoji.DoesNotExist, SlackToken.DoesNotExist, ValueError):
         pass

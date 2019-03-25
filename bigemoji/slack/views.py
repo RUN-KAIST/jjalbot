@@ -2,8 +2,6 @@ from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import csrf_exempt
 from django.conf import settings
 from django.http import JsonResponse, HttpResponseForbidden, HttpResponse
-from django.utils import timezone
-from django.db.models import Q
 
 from allauth.socialaccount.helpers import render_authentication_error
 from allauth.socialaccount.providers.base import AuthError
@@ -20,9 +18,7 @@ import shlex
 import requests
 
 from .tasks import upload_bigemoji
-from .models import SlackToken, SlackAccount, SlackTeam
 from .provider import SlackProvider
-from ..models import BigEmoji
 
 
 # Create your views here.
@@ -53,29 +49,13 @@ def index(request):
             channel_id = request.POST.get('channel_id')
             response_url = request.POST.get('response_url')
 
-            try:
-                team = SlackTeam.objects.get(pk=team_id)
-                bigemoji = BigEmoji.objects.get(team=team, emoji_name=bigemoji_name)
-                account = SlackAccount.objects.get(team=team, slack_user_id=slack_user_id)
-                token = SlackToken.objects.filter(Q(account=account.account),
-                                                  Q(scopes__contains='files:write:user'),
-                                                  Q(scopes__contains='chat:write:user'),
-                                                  Q(expires_at__lte=timezone.now())
-                                                  | Q(expires_at=None))[0:1].get()
-                delete_eta = team.delete_eta
-                upload_bigemoji.delay(channel_id, bigemoji.pk, token.pk, response_url, delete_eta)
-                return HttpResponse()
-            except BigEmoji.DoesNotExist:
-                error_msg = 'There is no such emoji!'
-            except (SlackTeam.DoesNotExist, SlackAccount.DoesNotExist, SlackToken.DoesNotExist):
-                error_msg = 'You should grant us some permissions. Please visit `https://run.kaist.ac.kr/jjalbot/`.'
+            upload_bigemoji.delay(team_id, channel_id, slack_user_id, bigemoji_name, response_url)
+            return HttpResponse()
         else:
-            error_msg = 'The command should contain exactly 1 argument.'
-
-        return JsonResponse({
-            'response_type': 'ephemeral',
-            'text': error_msg
-        })
+            return JsonResponse({
+                'response_type': 'ephemeral',
+                'text': 'The command should contain exactly 1 argument.'
+            })
     else:
         return HttpResponseForbidden()
 
