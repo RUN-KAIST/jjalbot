@@ -58,7 +58,7 @@
 
 <br /><br />
 
-<form enctype="multipart/form-data" method="post">
+<form action="{% url 'bigemoji:add' team_id=account_user.team.id slack_user_id=account_user.slack_user_id %}" enctype="multipart/form-data" method="post">
     {% csrf_token %}
     {{ form }}
     <input type="submit" value="Submit" />
@@ -66,19 +66,31 @@
 
 <br />
 
-<table>
-    <tr>
-        <th>Owner</th>
-        <th>Name</th>
-        <th>Big Emoji</th>
-    </tr>
-{% for bigemoji in bigemojis %}
-    <tr>
-        <td>{{ bigemoji.owner }}</td>
-        <td>{{ bigemoji.emoji_name }}</td>
-        <td><img class="bigemoji" src="{{ bigemoji.image.url }}" /></td>
-    </tr>
-{% endfor %}
-</table>
+<form action="{% url 'bigemoji:remove' team_id=account_user.team.id slack_user_id=account_user.slack_user_id %}" method="post">
+    <input type="submit" value="Delete" />
+
+    <table>
+        <tr>
+            <th>Owner</th>
+            <th>Name</th>
+            <th>Big Emoji</th>
+            <th>Delete</th>
+        </tr>
+    {% for bigemoji in bigemojis %}
+        <tr>
+            <td>{{ bigemoji.owner }}</td>
+            <td>{{ bigemoji.emoji_name }}</td>
+            <td><img class="bigemoji" src="{{ bigemoji.image.url }}" /></td>
+            <td>
+                {% if bigemoji.owner == account_user %}
+                <input type="checkbox" value="hello" />
+                {% else %}
+                <input type="checkbox" value="hello" disabled />
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+</form>
 
 {% endblock %}
