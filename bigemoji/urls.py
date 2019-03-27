@@ -8,7 +8,7 @@ urlpatterns = [
     path('bigemoji/<team_id>/<slack_user_id>/', include([
         path('', views.bigemoji, name='bigemoji'),
         path('add/', views.bigemoji_add, name='add'),
-        path('remove/', views.bigemoji_remove, name='remove'),
+        path('remove/<bigemoji_name>', views.bigemoji_remove, name='remove'),
     ])),
     path('app/', include('bigemoji.slack.urls'))
 ]

@@ -79,5 +79,19 @@ def bigemoji_add(request, account, account_set):
 
 @require_POST
 @slack_login_required
-def bigemoji_remove(request, account, account_set):
-    return HttpResponseNotFound()
+def bigemoji_remove(request, account, account_set, bigemoji_name):
+    try:
+        team = account.team
+        bigemoji = BigEmoji.objects.get(team=team, emoji_name=bigemoji_name)
+        if bigemoji.owner == account:
+            bigemoji.delete()
+            messages.add_message(
+                request,
+                messages.INFO,
+                'Successfully deleted BigEmoji {}.'.format(bigemoji_name)
+            )
+            return HttpResponseRedirect(reverse('bigemoji:bigemoji', args=(team.id, account.slack_user_id)))
+        else:
+            return HttpResponseNotFound()
+    except BigEmoji.DoesNotExist:
+        return HttpResponseNotFound()
