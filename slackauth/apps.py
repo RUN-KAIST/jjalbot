@@ -6,7 +6,7 @@ from allauth.socialaccount.signals import pre_social_login, social_account_added
 from .signals import save_slack_token, save_slack_data
 
 
-class SlackConfig(AppConfig):
+class SlackAuthConfig(AppConfig):
     name = 'slackauth'
 
     def ready(self):

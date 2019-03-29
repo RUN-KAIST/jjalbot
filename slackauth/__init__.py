@@ -1,1 +1,1 @@
-default_app_config = 'slackauth.apps.SlackConfig'
+default_app_config = 'slackauth.apps.SlackAuthConfig'
