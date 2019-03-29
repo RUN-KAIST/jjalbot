@@ -12,7 +12,7 @@ from .utils import slack_delayed_response, slack_api_call
 @shared_task
 def upload_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, response_url):
     from ..models import BigEmoji
-    from .models import SlackTeam, SlackAccount, SlackToken
+    from slackauth.models import SlackTeam, SlackAccount, SlackToken
 
     try:
         team = SlackTeam.objects.get(pk=team_id)
@@ -23,7 +23,7 @@ def upload_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, response_
                                           Q(scopes__contains='chat:write:user'),
                                           Q(expires_at__lte=timezone.now())
                                           | Q(expires_at=None))[0:1].get()
-        delete_eta = team.delete_eta
+        delete_eta = team.bigemojistorage.delete_eta
 
         resp_json = slack_api_call(
             'files.upload',
@@ -70,7 +70,7 @@ def upload_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, response_
 @shared_task
 def delete_bigemoji(channel_id, timestamp, file_id, bigemoji_pk, token_pk):
     from ..models import BigEmoji
-    from .models import SlackToken
+    from slackauth.models import SlackToken
 
     try:
         bigemoji = BigEmoji.objects.get(pk=bigemoji_pk)

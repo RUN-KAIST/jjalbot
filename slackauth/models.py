@@ -8,17 +8,11 @@ from allauth.socialaccount.fields import JSONField
 from allauth.socialaccount.models import SocialAccount, SocialApp
 
 
-# Deprecated models.
-
-
 class SlackTeam(models.Model):
     id = models.CharField(max_length=settings.SLACK_TEAM_ID_MAX, primary_key=True)
     name = models.CharField(max_length=settings.SLACK_TEAM_NAME_MAX)
     domain = models.CharField(max_length=settings.SLACK_TEAM_DOMAIN_MAX, unique=True)
     verified = models.BooleanField(default=False)
-    size = models.IntegerField(default=0)
-    max_size = models.IntegerField(default=settings.BIGEMOJI_MAX_SPACE)
-    delete_eta = models.IntegerField(default=settings.BIGEMOJI_DELETE_ETA)
     extra_data = JSONField(default=dict)
     date_created = models.DateTimeField(auto_now=True, verbose_name='date created')
 
@@ -32,18 +26,8 @@ class SlackTeam(models.Model):
     was_created_recently.boolean = True
     was_created_recently.short_description = 'Created recently?'
 
-    def occupied(self):
-        from ..models import BigEmoji
 
-        total_size = 0
-        bigemojis = BigEmoji.objects.filter(team=self)
-        for bigemoji in bigemojis:
-            total_size += bigemoji.image.size
-
-        return total_size
-
-
-class SlackAccountDeprecated(models.Model):
+class SlackAccount(models.Model):
     account = models.OneToOneField(SocialAccount,
                                    on_delete=models.CASCADE,
                                    primary_key=True)
@@ -66,7 +50,7 @@ class SlackAccountDeprecated(models.Model):
     was_created_recently.short_description = 'Created recently?'
 
 
-class SlackTokenDeprecated(models.Model):
+class SlackToken(models.Model):
     app = models.ForeignKey(SocialApp, on_delete=models.CASCADE)
     account = models.ForeignKey(SocialAccount, on_delete=models.CASCADE)
     token = models.TextField(verbose_name='token')

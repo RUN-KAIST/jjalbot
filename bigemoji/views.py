@@ -9,7 +9,7 @@ from django.views.decorators.http import require_POST
 from .decorators import slack_login_required
 from .forms import BigEmojiForm
 from .models import BigEmoji
-from .slack.models import SlackAccount, SlackTeam
+from slackauth.models import SlackAccount, SlackTeam
 
 
 @login_required
@@ -54,11 +54,12 @@ def bigemoji(request, account, account_set):
 @slack_login_required
 def bigemoji_add(request, account, account_set):
     team = account.team
+    storage = team.bigemojistorage
     bigemoji = BigEmoji(owner=account, team=team)
     form = BigEmojiForm(request.POST, request.FILES, instance=bigemoji)
 
     # TODO: Handle race conditions...
-    if team.verified and team.occupied() + request.FILES.get('image').size <= team.max_size:
+    if team.verified and storage.occupied() + request.FILES.get('image').size <= storage.max_size:
         try:
             form.save()
         except IntegrityError:
