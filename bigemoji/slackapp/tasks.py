@@ -23,7 +23,7 @@ def upload_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, response_
                                           Q(scopes__contains='chat:write:user'),
                                           Q(expires_at__lte=timezone.now())
                                           | Q(expires_at=None))[0:1].get()
-        delete_eta = team.delete_eta
+        delete_eta = team.bigemojistorage.delete_eta
 
         resp_json = slack_api_call(
             'files.upload',
