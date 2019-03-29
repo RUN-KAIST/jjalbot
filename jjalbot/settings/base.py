@@ -48,6 +48,9 @@ INSTALLED_APPS = [
 
     'bigemoji',
     'bigemoji.slack',
+    'bigemoji.slackapp',
+
+    'slackauth',
 ]
 
 AUTHENTICATION_BACKENDS = (

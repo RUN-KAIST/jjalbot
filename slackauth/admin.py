@@ -1,10 +1,10 @@
 from django.contrib import admin
 
-from .models import SlackTokenDeprecated as SlackToken, SlackTeam, SlackAccountDeprecated as SlackAccount
+from .models import SlackToken, SlackTeam, SlackAccount
 
 
 class SlackTeamAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'domain', 'verified', 'occupied', 'max_size', 'was_created_recently',)
+    list_display = ('id', 'name', 'domain', 'verified', 'was_created_recently',)
     list_filter = ('verified',)
 
 

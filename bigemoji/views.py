@@ -9,7 +9,7 @@ from django.views.decorators.http import require_POST
 from .decorators import slack_login_required
 from .forms import BigEmojiForm
 from .models import BigEmoji
-from .slack.models import SlackAccount, SlackTeam
+from .slack.models import SlackAccountDeprecated as SlackAccount, SlackTeam
 
 
 @login_required

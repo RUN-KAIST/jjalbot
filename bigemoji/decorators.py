@@ -3,7 +3,7 @@ from functools import wraps
 from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseNotFound
 
-from .slack.models import SlackAccount, SlackTeam
+from .slack.models import SlackAccountDeprecated as SlackAccount, SlackTeam
 
 
 def slack_login_required(f):

@@ -3,7 +3,7 @@ from django.contrib.auth import get_user_model
 
 def save_slack_token(sender, **kwargs):
     from allauth.socialaccount.models import SocialLogin
-    from .models import SlackTokenDeprecated as SlackToken
+    from .models import SlackToken
 
     # Various checks for our use
     if 'request' in kwargs and 'sociallogin' in kwargs and sender in (
@@ -39,7 +39,7 @@ def save_slack_token(sender, **kwargs):
 
 def save_slack_data(sender, **kwargs):
     from allauth.socialaccount.models import SocialLogin
-    from .models import SlackTeam, SlackAccountDeprecated as SlackAccount
+    from .models import SlackTeam, SlackAccount
 
     # Various checks for our use
     if 'request' in kwargs and 'sociallogin' in kwargs and sender in (
