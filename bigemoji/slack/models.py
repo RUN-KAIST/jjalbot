@@ -8,6 +8,9 @@ from allauth.socialaccount.fields import JSONField
 from allauth.socialaccount.models import SocialAccount, SocialApp
 
 
+# Deprecated models.
+
+
 class SlackTeam(models.Model):
     id = models.CharField(max_length=settings.SLACK_TEAM_ID_MAX, primary_key=True)
     name = models.CharField(max_length=settings.SLACK_TEAM_NAME_MAX)

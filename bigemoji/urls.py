@@ -10,5 +10,5 @@ urlpatterns = [
         path('add/', views.bigemoji_add, name='add'),
         path('remove/<bigemoji_name>', views.bigemoji_remove, name='remove'),
     ])),
-    path('app/', include('bigemoji.slack.urls'))
+    path('app/', include('bigemoji.slackapp.urls'))
 ]

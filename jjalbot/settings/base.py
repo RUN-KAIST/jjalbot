@@ -107,7 +107,7 @@ TEMPLATES = [
                 # `allauth` needs this from django
                 'django.template.context_processors.request',
 
-                'bigemoji.slack.context_processors.login_scope',
+                'slackauth.context_processors.login_scope',
             ],
         },
     },

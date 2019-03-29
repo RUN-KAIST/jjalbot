@@ -3,8 +3,7 @@ import datetime
 from django.db import models
 from django.utils import timezone
 
-from .slack.models import SlackTeam, SlackAccountDeprecated as SlackAccount
-from slackauth.models import SlackTeam as SlackTeamRenewed
+from slackauth.models import SlackTeam, SlackAccount
 
 
 def team_directory(instance, filename):
@@ -48,7 +47,7 @@ class BigEmojiAlias(models.Model):
 
 
 class BigEmojiStorage(models.Model):
-    team = models.OneToOneField(SlackTeamRenewed, on_delete=models.CASCADE)
+    team = models.OneToOneField(SlackTeam, on_delete=models.CASCADE)
     max_size = models.IntegerField(default=10000000)
     delete_eta = models.IntegerField(default=3600)
 
@@ -57,7 +56,7 @@ class BigEmojiStorage(models.Model):
 
     def occupied(self):
         total_size = 0
-        bigemojis = BigEmoji.objects.filter(team=self)
+        bigemojis = BigEmoji.objects.filter(team=self.team)
         for bigemoji in bigemojis:
             total_size += bigemoji.image.size
 
