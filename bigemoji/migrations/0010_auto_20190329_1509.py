@@ -8,6 +8,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ('bigemoji', '0009_bigemojistorage'),
+        ('slack', '0008_move_slack_account'),
     ]
 
     operations = [
