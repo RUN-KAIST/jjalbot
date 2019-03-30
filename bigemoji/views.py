@@ -85,6 +85,8 @@ def bigemoji_remove(request, account, account_set, bigemoji_name):
         team = account.team
         bigemoji = BigEmoji.objects.get(team=team, emoji_name=bigemoji_name)
         if bigemoji.owner == account:
+            # Wait a minute - is it really ok?
+            bigemoji.image.delete()
             bigemoji.delete()
             messages.add_message(
                 request,
