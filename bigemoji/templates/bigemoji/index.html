@@ -60,7 +60,13 @@
 
 <form action="{% url 'bigemoji:add' team_id=account_user.team.id slack_user_id=account_user.slack_user_id %}" enctype="multipart/form-data" method="post">
     {% csrf_token %}
-    {{ form }}
+    {{ add_form }}
+    <input type="submit" value="Submit" />
+</form>
+
+<form action="{% url 'bigemoji:alias' team_id=account_user.team.id slack_user_id=account_user.slack_user_id %}" enctype="multipart/form-data" method="post">
+    {% csrf_token %}
+    {{ alias_form }}
     <input type="submit" value="Submit" />
 </form>
 
