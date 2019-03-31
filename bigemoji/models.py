@@ -2,6 +2,8 @@ import datetime
 
 from django.core.exceptions import ValidationError
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 from django.utils import timezone
 
 from slackauth.models import SlackTeam, SlackAccount
@@ -81,6 +83,12 @@ class BigEmoji(models.Model):
     was_created_recently.admin_order_field = 'date_created'
     was_created_recently.boolean = True
     was_created_recently.short_description = 'Created recently?'
+
+
+@receiver(post_delete, sender=BigEmoji)
+def remove_file_on_delete(sender, instance, **kwargs):
+    if not instance.is_alias:
+        instance.image_file.delete(save=False)
 
 
 class BigEmojiAlias(models.Model):
