@@ -11,12 +11,13 @@ from .utils import slack_delayed_response, slack_api_call
 
 @shared_task
 def upload_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, response_url):
-    from ..models import BigEmoji
+    from ..models import BigEmoji, BigEmojiStorage
     from slackauth.models import SlackTeam, SlackAccount, SlackToken
 
     try:
         team = SlackTeam.objects.get(pk=team_id)
-        bigemoji = BigEmoji.objects.get(team=team, emoji_name=bigemoji_name)
+        storage = team.bigemojistorage
+        bigemoji = BigEmoji.objects.get(storage=storage, emoji_name=bigemoji_name)
         account = SlackAccount.objects.get(team=team, slack_user_id=slack_user_id)
         token = SlackToken.objects.filter(Q(account=account.account),
                                           Q(scopes__contains='files:write:user'),
@@ -59,7 +60,12 @@ def upload_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, response_
 
     except BigEmoji.DoesNotExist:
         slack_delayed_response(response_url, 'That emoji does not exist!')
-    except (SlackTeam.DoesNotExist, SlackAccount.DoesNotExist, SlackToken.DoesNotExist) as e:
+    except (
+        BigEmojiStorage.DoesNotExist,
+        SlackTeam.DoesNotExist,
+        SlackAccount.DoesNotExist,
+        SlackToken.DoesNotExist
+    ) as e:
         print(e)
         slack_delayed_response(response_url, 'You should grant us some permissions. '
                                              'Please visit `https://run.kaist.ac.kr/jjalbot/`.')

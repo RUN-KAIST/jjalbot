@@ -1,16 +1,21 @@
 from django.contrib import admin
 
-from .models import BigEmoji
+from .models import BigEmoji, BigEmojiStorage
 
 # Register your models here.
 
 
+class BigEmojiStorageAdmin(admin.ModelAdmin):
+    list_display = ('team', 'max_entry', 'max_size', 'occupied')
+
+
 class BigEmojiAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ['team', 'owner', 'emoji_name', 'image']}),
+        (None, {'fields': ['storage', 'owner', 'emoji_name', 'image_file', 'alias']}),
     ]
-    list_display = ('team', 'owner', 'emoji_name', 'image', 'date_created', 'was_created_recently')
-    list_filter = ['date_created', 'team', 'owner']
+    list_display = ('storage', 'owner', 'emoji_name', 'image_file', 'date_created', 'alias')
+    list_filter = ['date_created', 'storage', 'owner']
 
 
 admin.site.register(BigEmoji, BigEmojiAdmin)
+admin.site.register(BigEmojiStorage, BigEmojiStorageAdmin)
