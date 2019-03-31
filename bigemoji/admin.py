@@ -11,9 +11,9 @@ class BigEmojiStorageAdmin(admin.ModelAdmin):
 
 class BigEmojiAdmin(admin.ModelAdmin):
     fieldsets = [
-        (None, {'fields': ['storage', 'owner', 'emoji_name', 'image']}),
+        (None, {'fields': ['storage', 'owner', 'emoji_name', 'image_file', 'alias']}),
     ]
-    list_display = ('storage', 'owner', 'emoji_name', 'image', 'date_created', 'was_created_recently')
+    list_display = ('storage', 'owner', 'emoji_name', 'image_file', 'date_created', 'alias')
     list_filter = ['date_created', 'storage', 'owner']
 
 
