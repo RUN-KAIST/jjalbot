@@ -22,7 +22,7 @@ def upload_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, response_
         token = SlackToken.objects.filter(Q(account=account.account),
                                           Q(scopes__contains='files:write:user'),
                                           Q(scopes__contains='chat:write:user'),
-                                          Q(expires_at__lte=timezone.now())
+                                          Q(expires_at__gt=timezone.now())
                                           | Q(expires_at=None))[0:1].get()
         delete_eta = team.bigemojistorage.delete_eta
 
