@@ -109,3 +109,6 @@ venv.bak/
 # BigEmoji
 jjalbot/settings/production.py
 jjalbot/settings/development.py
+
+# ETC
+.DS_Store
