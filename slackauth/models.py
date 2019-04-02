@@ -65,6 +65,7 @@ class SlackToken(models.Model):
     )
     token_type = models.IntegerField(choices=TOKEN_TYPE_CHOICES)
     app = models.ForeignKey(SocialApp, on_delete=models.CASCADE)
+    # TODO: Connect SlackToken to SlackAccount
     account = models.ForeignKey(SocialAccount, on_delete=models.CASCADE)
     token = models.TextField(verbose_name='token')
     token_secret = models.TextField(blank=True, verbose_name='token secret')
