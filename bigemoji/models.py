@@ -36,7 +36,7 @@ class BigEmojiStorage(models.Model):
 
 class BigEmoji(models.Model):
     owner = models.ForeignKey(SlackAccount, on_delete=models.CASCADE)
-    storage = models.ForeignKey(BigEmojiStorage, null=True, on_delete=models.CASCADE)
+    storage = models.ForeignKey(BigEmojiStorage, on_delete=models.CASCADE)
     emoji_name = models.CharField(max_length=100)
     image_file = models.ImageField(upload_to=team_directory, null=True)
     date_created = models.DateTimeField(auto_now=True, verbose_name='date created')

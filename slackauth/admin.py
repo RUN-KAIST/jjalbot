@@ -16,11 +16,11 @@ class SlackAccountAdmin(admin.ModelAdmin):
 
 class SlackTokenAdmin(admin.ModelAdmin):
     raw_id_fields = ('app', 'account',)
-    list_display = ('app', 'account', 'truncated_scopes', 'truncated_token', 'expires_at')
-    list_filter = ('app', 'app__provider', 'expires_at')
+    list_display = ('app', 'account', 'truncated_scopes', 'token_type', 'expires_at')
+    list_filter = ('app', 'app__provider', 'expires_at', 'token_type')
 
     def truncated_scopes(self, token):
-        max_chars = 20
+        max_chars = 40
         ret = token.scopes
         if len(ret) > max_chars:
             ret = ret[0:max_chars] + '...(truncated)'
