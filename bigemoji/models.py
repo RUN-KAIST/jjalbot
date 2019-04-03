@@ -20,6 +20,8 @@ class BigEmojiStorage(models.Model):
     max_size = models.IntegerField(default=10000000)
     max_entry = models.IntegerField(default=1000)
     delete_eta = models.IntegerField(default=3600)
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name='date created')
+    date_updated = models.DateTimeField(auto_now=True, verbose_name='date updated')
 
     def __str__(self):
         return self.team.__str__()
@@ -39,7 +41,7 @@ class BigEmoji(models.Model):
     storage = models.ForeignKey(BigEmojiStorage, on_delete=models.CASCADE)
     emoji_name = models.CharField(max_length=100)
     image_file = models.ImageField(upload_to=team_directory, null=True)
-    date_created = models.DateTimeField(auto_now=True, verbose_name='date created')
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name='date created')
     alias = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
 
     class Meta:
@@ -89,16 +91,3 @@ class BigEmoji(models.Model):
 def remove_file_on_delete(sender, instance, **kwargs):
     if not instance.is_alias:
         instance.image_file.delete(save=False)
-
-
-class BigEmojiAlias(models.Model):
-    owner = models.ForeignKey(SlackAccount, on_delete=models.CASCADE)
-    team = models.ForeignKey(SlackTeam, on_delete=models.CASCADE)
-    bigemoji = models.ForeignKey(BigEmoji, on_delete=models.CASCADE)
-    alias_name = models.CharField(max_length=100)
-
-    class Meta:
-        unique_together = (('team', 'alias_name'),)
-
-    def __str__(self):
-        return self.alias_name

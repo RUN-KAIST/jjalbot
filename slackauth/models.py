@@ -14,7 +14,8 @@ class SlackTeam(models.Model):
     domain = models.CharField(max_length=settings.SLACK_TEAM_DOMAIN_MAX, unique=True)
     verified = models.BooleanField(default=False)
     extra_data = JSONField(default=dict)
-    date_created = models.DateTimeField(auto_now=True, verbose_name='date created')
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name='date created', db_index=True)
+    date_updated = models.DateTimeField(auto_now=True, verbose_name='date updated', db_index=True)
 
     def __str__(self):
         return '{}.slack.com'.format(self.domain)
@@ -34,7 +35,8 @@ class SlackAccount(models.Model):
     team = models.ForeignKey(SlackTeam, on_delete=models.CASCADE)
     slack_user_id = models.CharField(max_length=settings.SLACK_USER_ID_MAX)
     extra_data = JSONField(default=dict)
-    date_created = models.DateTimeField(auto_now=True, verbose_name='date created')
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name='date created')
+    date_updated = models.DateTimeField(auto_now=True, verbose_name='date updated', db_index=True)
 
     class Meta:
         unique_together = (('team', 'slack_user_id'),)
@@ -50,61 +52,42 @@ class SlackAccount(models.Model):
     was_created_recently.short_description = 'Created recently?'
 
 
-class SlackToken(models.Model):
-    USER = 0
-    BOT = 1
-    WORKSPACE = 2
-    LEGACY = 3
-    VERIFICATION = 4
-    TOKEN_TYPE_CHOICES = (
-        (USER, 'User token'),
-        (BOT, 'Bot token'),
-        (WORKSPACE, 'Workspace token'),
-        (LEGACY, 'Legacy token'),
-        (VERIFICATION, 'Verification token'),
-    )
-    token_type = models.IntegerField(choices=TOKEN_TYPE_CHOICES)
+class SlackTokenBase(models.Model):
     app = models.ForeignKey(SocialApp, on_delete=models.CASCADE)
-    # TODO: Connect SlackToken to SlackAccount
-    account = models.ForeignKey(SocialAccount, on_delete=models.CASCADE)
     token = models.TextField(verbose_name='token')
-    token_secret = models.TextField(blank=True, verbose_name='token secret')
-    expires_at = models.DateTimeField(blank=True, null=True, verbose_name='expires at')
-    scopes = models.TextField(blank=True, verbose_name='scopes')
     extra_data = JSONField(default=dict)
-    date_created = models.DateTimeField(auto_now=True, verbose_name='date created')
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name='date_created')
+    date_updated = models.DateTimeField(auto_now=True, verbose_name='date updated', db_index=True)
 
     class Meta:
-        unique_together = (('app', 'account', 'token_type', 'scopes'),)
-        verbose_name = 'slack application token'
-        verbose_name_plural = 'slack application tokens'
+        abstract = True
+
+
+class SlackUserToken(SlackTokenBase):
+    slack_account = models.ForeignKey(SlackAccount, on_delete=models.CASCADE)
+    scope = models.TextField(blank=True, verbose_name='scope')
+
+    class Meta:
+        unique_together = (('app', 'slack_account'),)
+        verbose_name = 'slack user token'
+        verbose_name_plural = 'slack user tokens'
 
     def __str__(self):
         return self.token
+
+
+class SlackBotToken(SlackTokenBase):
+    team = models.ForeignKey(SlackTeam, on_delete=models.CASCADE)
+    slack_bot_id = models.CharField(max_length=settings.SLACK_BOT_ID_MAX)
+
+    class Meta:
+        unique_together = (('app', 'team'),)
 
 
 class SlackLogin(SocialLogin):
     def __init__(self, access_token, *args, **kwargs):
         super(SlackLogin, self).__init__(*args, **kwargs)
         self.access_token = access_token
-
-    def _save_slack_token(self):
-        app = self.token.app
-        account = self.account
-        scopes = self.access_token['scope']
-        SlackToken.objects.update_or_create(defaults={
-            'token': self.token.token,
-            'token_secret': self.token.token_secret,
-            'expires_at': self.token.expires_at,
-            'extra_data': self.access_token,
-        }, app=app, account=account, token_type=SlackToken.USER, scopes=scopes)
-        if 'bot' in self.access_token:
-            SlackToken.objects.update_or_create(defaults={
-                'token': self.access_token.get('bot').get('bot_access_token'),
-                'token_secret': '',
-                'expires_at': None,
-                'extra_data': self.access_token.get('bot'),
-            }, app=app, account=account, token_type=SlackToken.BOT, scopes='')
 
     def _save_slack_data(self):
         account = self.account
@@ -115,20 +98,37 @@ class SlackLogin(SocialLogin):
             'name': team_data.get('name'),
             'domain': team_data.get('domain'),
             'extra_data': team_data,
+            'date_updated': timezone.now(),
         }, pk=team_data.get('id'))
 
-        SlackAccount.objects.update_or_create(defaults={
+        slack_account, _ = SlackAccount.objects.update_or_create(defaults={
             'slack_user_id': user_data.get('id'),
             'team': team,
             'extra_data': user_data,
+            'date_updated': timezone.now(),
         }, account=account)
+
+        app = self.token.app
+        scope = self.access_token['scope']
+
+        SlackUserToken.objects.update_or_create(defaults={
+            'extra_data': self.access_token,
+            'token': self.token.token,
+            'scope': scope,
+            'date_updated': timezone.now(),
+        }, app=app, slack_account=slack_account)
+        if 'bot' in self.access_token:
+            bot_extra_data = self.access_token.get('bot')
+            SlackBotToken.objects.update_or_create(defaults={
+                'token': bot_extra_data.get('bot_access_token'),
+                'extra_data': bot_extra_data,
+                'date_updated': timezone.now(),
+            }, app=app, team=slack_account.team)
 
     def save(self, request, connect=False):
         super(SlackLogin, self).save(request, connect)
-        self._save_slack_token()
         self._save_slack_data()
 
     def lookup(self):
         super(SlackLogin, self).lookup()
-        self._save_slack_token()
         self._save_slack_data()

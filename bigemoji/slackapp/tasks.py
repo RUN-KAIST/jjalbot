@@ -1,5 +1,5 @@
+from django.conf import settings
 from django.db.models import Q
-from django.utils import timezone
 
 from celery import shared_task
 import re
@@ -12,18 +12,18 @@ from .utils import slack_delayed_response, slack_api_call
 @shared_task
 def upload_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, response_url):
     from ..models import BigEmoji, BigEmojiStorage
-    from slackauth.models import SlackTeam, SlackAccount, SlackToken
+    from slackauth.models import SlackTeam, SlackAccount, SlackUserToken
 
     try:
         team = SlackTeam.objects.get(pk=team_id)
         storage = team.bigemojistorage
         bigemoji = BigEmoji.objects.get(storage=storage, emoji_name=bigemoji_name)
         account = SlackAccount.objects.get(team=team, slack_user_id=slack_user_id)
-        token = SlackToken.objects.filter(Q(account=account.account),
-                                          Q(scopes__contains='files:write:user'),
-                                          Q(scopes__contains='chat:write:user'),
-                                          Q(expires_at__gt=timezone.now())
-                                          | Q(expires_at=None))[0:1].get()
+        token = SlackUserToken.objects.get(
+            Q(scope__contains='files:write:user') & Q(scope__contains='chat:write:user'),
+            app_id=settings.BIGEMOJI_APP_ID,
+            slack_account=account
+        )
         delete_eta = team.bigemojistorage.delete_eta
 
         resp_json = slack_api_call(
@@ -49,11 +49,13 @@ def upload_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, response_
                     break
             delete_bigemoji.apply_async(eta=datetime.datetime.now() + datetime.timedelta(seconds=delete_eta),
                                         args=[
+                                            team_id,
                                             channel_id,
+                                            slack_user_id,
+                                            bigemoji_name,
                                             timestamp,
                                             file_id,
-                                            bigemoji.pk,
-                                            token.pk
+                                            token.token,
                                         ])
         else:
             slack_delayed_response(response_url, 'Something went wrong. Please try again!')
@@ -64,7 +66,7 @@ def upload_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, response_
         BigEmojiStorage.DoesNotExist,
         SlackTeam.DoesNotExist,
         SlackAccount.DoesNotExist,
-        SlackToken.DoesNotExist
+        SlackUserToken.DoesNotExist
     ) as e:
         print(e)
         slack_delayed_response(response_url, 'You should grant us some permissions. '
@@ -74,27 +76,37 @@ def upload_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, response_
 
 
 @shared_task
-def delete_bigemoji(channel_id, timestamp, file_id, bigemoji_pk, token_pk):
-    from ..models import BigEmoji
-    from slackauth.models import SlackToken
-
-    try:
-        bigemoji = BigEmoji.objects.get(pk=bigemoji_pk)
-        token = SlackToken.objects.get(pk=token_pk)
-
-        slack_api_call(
+def delete_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, timestamp, file_id, token):
+    def try_delete(trying_token):
+        success = False
+        resp_json = slack_api_call(
             'chat.update',
-            token.token,
+            trying_token,
             channel=channel_id,
-            text='[BigEmoji:{}]'.format(bigemoji.emoji_name),
+            text='[BigEmoji:{}]'.format(bigemoji_name),
             ts=timestamp,
             as_user=True
         )
+        if resp_json.get('ok'):
+            success = slack_api_call(
+                'files.delete',
+                trying_token,
+                file=file_id
+            ).get('ok')
+        return success
 
-        slack_api_call(
-            'files.delete',
-            token.token,
-            file=file_id
-        )
-    except (BigEmoji.DoesNotExist, SlackToken.DoesNotExist, ValueError):
-        pass
+    # Try with passed token, or fetch from DB if fails.
+    if not try_delete(token):
+        from ..models import SlackAccount
+        from slackauth.models import SlackUserToken
+
+        try:
+            account = SlackAccount.objects.get(team_id=team_id, slack_user_id=slack_user_id)
+            new_token = SlackUserToken.objects.get(
+                Q(scope__contains='files:write:user') & Q(scope__contains='chat:write:user'),
+                app_id=settings.BIGEMOJI_APP_ID,
+                slack_account=account,
+            )
+            try_delete(new_token)
+        except (SlackAccount.DoesNotExist, SlackUserToken.DoesNotExist, ValueError):
+            pass
