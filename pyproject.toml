@@ -14,6 +14,7 @@ celery = "^4.2"
 [tool.poetry.dev-dependencies]
 selenium = "^3.141"
 coverage = "^4.5"
+fabric = "^2.4"
 
 [build-system]
 requires = ["poetry>=0.12"]
