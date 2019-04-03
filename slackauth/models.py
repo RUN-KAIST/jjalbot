@@ -98,14 +98,12 @@ class SlackLogin(SocialLogin):
             'name': team_data.get('name'),
             'domain': team_data.get('domain'),
             'extra_data': team_data,
-            'date_updated': timezone.now(),
         }, pk=team_data.get('id'))
 
         slack_account, _ = SlackAccount.objects.update_or_create(defaults={
             'slack_user_id': user_data.get('id'),
             'team': team,
             'extra_data': user_data,
-            'date_updated': timezone.now(),
         }, account=account)
 
         app = self.token.app
@@ -115,14 +113,12 @@ class SlackLogin(SocialLogin):
             'extra_data': self.access_token,
             'token': self.token.token,
             'scope': scope,
-            'date_updated': timezone.now(),
         }, app=app, slack_account=slack_account)
         if 'bot' in self.access_token:
             bot_extra_data = self.access_token.get('bot')
             SlackBotToken.objects.update_or_create(defaults={
                 'token': bot_extra_data.get('bot_access_token'),
                 'extra_data': bot_extra_data,
-                'date_updated': timezone.now(),
             }, app=app, team=slack_account.team)
 
     def save(self, request, connect=False):
