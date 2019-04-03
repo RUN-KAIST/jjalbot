@@ -5,14 +5,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('bigemoji', '0013_auto_20190330_1615'),
-    ]
+    dependencies = [("bigemoji", "0013_auto_20190330_1615")]
 
     operations = [
         migrations.AddField(
-            model_name='bigemojistorage',
-            name='max_entry',
+            model_name="bigemojistorage",
+            name="max_entry",
             field=models.IntegerField(default=1000),
-        ),
+        )
     ]

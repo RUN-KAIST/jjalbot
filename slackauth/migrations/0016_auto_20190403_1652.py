@@ -6,18 +6,15 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('socialaccount', '0003_extra_data_default_dict'),
-        ('slackauth', '0015_auto_20190403_1643'),
+        ("socialaccount", "0003_extra_data_default_dict"),
+        ("slackauth", "0015_auto_20190403_1643"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='slackusertoken',
-            old_name='account',
-            new_name='slack_account',
+            model_name="slackusertoken", old_name="account", new_name="slack_account"
         ),
         migrations.AlterUniqueTogether(
-            name='slackusertoken',
-            unique_together={('app', 'slack_account')},
+            name="slackusertoken", unique_together={("app", "slack_account")}
         ),
     ]

@@ -3,5 +3,5 @@ from allauth.socialaccount.providers.oauth2.urls import default_urlpatterns
 from .provider import SlackProvider
 
 
-app_name = 'slackauth'
+app_name = "slackauth"
 urlpatterns = default_urlpatterns(SlackProvider)

@@ -21,19 +21,23 @@ from django.views.generic.base import RedirectView
 
 
 urlpatterns = [
-    path('jjalbot/admin/', admin.site.urls),
-    path('jjalbot/accounts/', include('allauth.urls')),
-    path('jjalbot/', include('bigemoji.urls'))
+    path("jjalbot/admin/", admin.site.urls),
+    path("jjalbot/accounts/", include("allauth.urls")),
+    path("jjalbot/", include("bigemoji.urls")),
 ]
 
 if settings.DEBUG:
     urlpatterns += [
-        re_path(r'^jjalbot/media/(?P<path>.*)$', serve, {
-            'document_root': settings.MEDIA_ROOT,
-        }),
+        re_path(
+            r"^jjalbot/media/(?P<path>.*)$",
+            serve,
+            {"document_root": settings.MEDIA_ROOT},
+        )
     ]
 else:
     urlpatterns += [
-        re_path(r'^(?P<path>.*)$', RedirectView.as_view(url='{}/%(path)s'.format(settings.REDIRECT_WEB)))
+        re_path(
+            r"^(?P<path>.*)$",
+            RedirectView.as_view(url="{}/%(path)s".format(settings.REDIRECT_WEB)),
+        )
     ]
-

@@ -10,9 +10,7 @@ from slackauth.models import SlackTeam, SlackAccount
 
 
 def team_directory(instance, filename):
-    return '{}/{}_{}'.format(instance.team.id,
-                             instance.emoji_name,
-                             filename)
+    return "{}/{}_{}".format(instance.team.id, instance.emoji_name, filename)
 
 
 class BigEmojiStorage(models.Model):
@@ -20,8 +18,8 @@ class BigEmojiStorage(models.Model):
     max_size = models.IntegerField(default=10000000)
     max_entry = models.IntegerField(default=1000)
     delete_eta = models.IntegerField(default=3600)
-    date_created = models.DateTimeField(auto_now_add=True, verbose_name='date created')
-    date_updated = models.DateTimeField(auto_now=True, verbose_name='date updated')
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name="date created")
+    date_updated = models.DateTimeField(auto_now=True, verbose_name="date updated")
 
     def __str__(self):
         return self.team.__str__()
@@ -41,11 +39,11 @@ class BigEmoji(models.Model):
     storage = models.ForeignKey(BigEmojiStorage, on_delete=models.CASCADE)
     emoji_name = models.CharField(max_length=100)
     image_file = models.ImageField(upload_to=team_directory, null=True)
-    date_created = models.DateTimeField(auto_now_add=True, verbose_name='date created')
-    alias = models.ForeignKey('self', null=True, on_delete=models.CASCADE)
+    date_created = models.DateTimeField(auto_now_add=True, verbose_name="date created")
+    alias = models.ForeignKey("self", null=True, on_delete=models.CASCADE)
 
     class Meta:
-        unique_together = (('storage', 'emoji_name'),)
+        unique_together = (("storage", "emoji_name"),)
 
     def __str__(self):
         return self.emoji_name
@@ -60,10 +58,12 @@ class BigEmoji(models.Model):
 
     def clean(self):
         if self.image_file is None and self.alias is None:
-            raise ValidationError('The BigEmoji should contain an image or should be an alias.')
+            raise ValidationError(
+                "The BigEmoji should contain an image or should be an alias."
+            )
 
         if self.alias is not None and self.alias.alias is not None:
-            raise ValidationError('Cannot alias an alias.')
+            raise ValidationError("Cannot alias an alias.")
 
     @property
     def image(self):
@@ -82,9 +82,10 @@ class BigEmoji(models.Model):
     def was_created_recently(self):
         now = timezone.now()
         return now - datetime.timedelta(days=1) <= self.date_created <= now
-    was_created_recently.admin_order_field = 'date_created'
+
+    was_created_recently.admin_order_field = "date_created"
     was_created_recently.boolean = True
-    was_created_recently.short_description = 'Created recently?'
+    was_created_recently.short_description = "Created recently?"
 
 
 @receiver(post_delete, sender=BigEmoji)

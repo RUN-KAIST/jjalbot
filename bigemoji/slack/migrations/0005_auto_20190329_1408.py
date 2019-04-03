@@ -7,18 +7,14 @@ class Migration(migrations.Migration):
     atomic = False
 
     dependencies = [
-        ('socialaccount', '0003_extra_data_default_dict'),
-        ('bigemoji', '0009_bigemojistorage'),
-        ('slack', '0004_auto_20190324_0927'),
+        ("socialaccount", "0003_extra_data_default_dict"),
+        ("bigemoji", "0009_bigemojistorage"),
+        ("slack", "0004_auto_20190324_0927"),
     ]
 
     operations = [
         migrations.RenameModel(
-            old_name='SlackAccount',
-            new_name='SlackAccountDeprecated',
+            old_name="SlackAccount", new_name="SlackAccountDeprecated"
         ),
-        migrations.RenameModel(
-            old_name='SlackToken',
-            new_name='SlackTokenDeprecated',
-        ),
+        migrations.RenameModel(old_name="SlackToken", new_name="SlackTokenDeprecated"),
     ]

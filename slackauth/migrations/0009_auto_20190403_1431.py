@@ -5,14 +5,12 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('slackauth', '0008_auto_20190403_1431'),
-    ]
+    dependencies = [("slackauth", "0008_auto_20190403_1431")]
 
     operations = [
         migrations.AlterField(
-            model_name='slacktoken',
-            name='scope',
-            field=models.TextField(blank=True, verbose_name='scope'),
-        ),
+            model_name="slacktoken",
+            name="scope",
+            field=models.TextField(blank=True, verbose_name="scope"),
+        )
     ]

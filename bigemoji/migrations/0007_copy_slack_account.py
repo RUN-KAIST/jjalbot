@@ -2,7 +2,7 @@ from django.db import migrations, transaction
 
 
 def copy_slack_account(apps, schema_editor):
-    BigEmoji = apps.get_model('bigemoji', 'BigEmoji')
+    BigEmoji = apps.get_model("bigemoji", "BigEmoji")
     while BigEmoji.objects.filter(owner__isnull=True).exists():
         with transaction.atomic():
             for row in BigEmoji.objects.filter(owner__isnull=True):
@@ -11,7 +11,7 @@ def copy_slack_account(apps, schema_editor):
 
 
 def reverse_copy_slack_account(apps, schema_editor):
-    BigEmoji = apps.get_model('bigemoji', 'BigEmoji')
+    BigEmoji = apps.get_model("bigemoji", "BigEmoji")
     while BigEmoji.objects.filter(owner__isnull=False).exists():
         with transaction.atomic():
             for row in BigEmoji.objects.filter(owner__isnull=False):
@@ -22,13 +22,6 @@ def reverse_copy_slack_account(apps, schema_editor):
 class Migration(migrations.Migration):
     atomic = False
 
-    dependencies = [
-        ('bigemoji', '0006_add_owner'),
-    ]
+    dependencies = [("bigemoji", "0006_add_owner")]
 
-    operations = [
-        migrations.RunPython(
-            copy_slack_account,
-            reverse_copy_slack_account
-        )
-    ]
+    operations = [migrations.RunPython(copy_slack_account, reverse_copy_slack_account)]

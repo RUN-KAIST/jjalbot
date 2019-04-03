@@ -6,14 +6,12 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('slackauth', '0004_auto_20190402_1621'),
-    ]
+    dependencies = [("slackauth", "0004_auto_20190402_1621")]
 
     operations = [
         migrations.AddField(
-            model_name='slacktoken',
-            name='extra_data',
+            model_name="slacktoken",
+            name="extra_data",
             field=allauth.socialaccount.fields.JSONField(default=dict),
-        ),
+        )
     ]

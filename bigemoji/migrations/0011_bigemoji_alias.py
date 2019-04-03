@@ -6,14 +6,16 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('bigemoji', '0010_auto_20190329_1509'),
-    ]
+    dependencies = [("bigemoji", "0010_auto_20190329_1509")]
 
     operations = [
         migrations.AddField(
-            model_name='bigemoji',
-            name='alias',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='bigemoji.BigEmoji'),
-        ),
+            model_name="bigemoji",
+            name="alias",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="bigemoji.BigEmoji",
+            ),
+        )
     ]

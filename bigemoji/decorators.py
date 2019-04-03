@@ -17,4 +17,5 @@ def slack_login_required(f):
             return f(request, account, account_set, *args, **kwargs)
         except (SlackTeam.DoesNotExist, SlackAccount.DoesNotExist):
             return HttpResponseNotFound()
+
     return login_required(wrapper)

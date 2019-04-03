@@ -5,24 +5,11 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('slackauth', '0013_migrate_slack_token'),
-    ]
+    dependencies = [("slackauth", "0013_migrate_slack_token")]
 
     operations = [
-        migrations.AlterUniqueTogether(
-            name='slacktoken',
-            unique_together=set(),
-        ),
-        migrations.RemoveField(
-            model_name='slacktoken',
-            name='account',
-        ),
-        migrations.RemoveField(
-            model_name='slacktoken',
-            name='app',
-        ),
-        migrations.DeleteModel(
-            name='SlackToken',
-        ),
+        migrations.AlterUniqueTogether(name="slacktoken", unique_together=set()),
+        migrations.RemoveField(model_name="slacktoken", name="account"),
+        migrations.RemoveField(model_name="slacktoken", name="app"),
+        migrations.DeleteModel(name="SlackToken"),
     ]

@@ -2,9 +2,9 @@ from django.db import migrations, transaction
 
 
 def copy_slack_team(apps, schema_editor):
-    SlackTeamDeprecated = apps.get_model('slack', 'SlackTeam')
-    SlackTeam = apps.get_model('slackauth', 'SlackTeam')
-    BigEmojiStorage = apps.get_model('bigemoji', 'BigEmojiStorage')
+    SlackTeamDeprecated = apps.get_model("slack", "SlackTeam")
+    SlackTeam = apps.get_model("slackauth", "SlackTeam")
+    BigEmojiStorage = apps.get_model("bigemoji", "BigEmojiStorage")
 
     with transaction.atomic():
         for row_deprecated in SlackTeamDeprecated.objects.all():
@@ -27,8 +27,8 @@ def copy_slack_team(apps, schema_editor):
 
 
 def reverse_copy_slack_team(apps, schema_editor):
-    SlackTeamDeprecated = apps.get_model('slack', 'SlackTeam')
-    SlackTeam = apps.get_model('slackauth', 'SlackTeam')
+    SlackTeamDeprecated = apps.get_model("slack", "SlackTeam")
+    SlackTeam = apps.get_model("slackauth", "SlackTeam")
 
     with transaction.atomic():
         for row_deprecated in SlackTeamDeprecated.objects.all():
@@ -40,14 +40,9 @@ class Migration(migrations.Migration):
     atomic = False
 
     dependencies = [
-        ('slack', '0006_move_slack_token'),
-        ('slackauth', '0001_initial'),
-        ('bigemoji', '0009_bigemojistorage')
+        ("slack", "0006_move_slack_token"),
+        ("slackauth", "0001_initial"),
+        ("bigemoji", "0009_bigemojistorage"),
     ]
 
-    operations = [
-        migrations.RunPython(
-            copy_slack_team,
-            reverse_copy_slack_team
-        )
-    ]
+    operations = [migrations.RunPython(copy_slack_team, reverse_copy_slack_team)]

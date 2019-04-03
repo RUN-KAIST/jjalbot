@@ -5,13 +5,8 @@ from django.db import migrations
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('slackauth', '0006_auto_20190403_1318'),
-    ]
+    dependencies = [("slackauth", "0006_auto_20190403_1318")]
 
     operations = [
-        migrations.AlterUniqueTogether(
-            name='slacktoken',
-            unique_together=set(),
-        ),
+        migrations.AlterUniqueTogether(name="slacktoken", unique_together=set())
     ]

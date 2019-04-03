@@ -6,14 +6,14 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('slackauth', '0005_slacktoken_extra_data'),
-    ]
+    dependencies = [("slackauth", "0005_slacktoken_extra_data")]
 
     operations = [
         migrations.AlterField(
-            model_name='slacktoken',
-            name='account',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='slackauth.SlackAccount'),
-        ),
+            model_name="slacktoken",
+            name="account",
+            field=models.ForeignKey(
+                on_delete=django.db.models.deletion.CASCADE, to="slackauth.SlackAccount"
+            ),
+        )
     ]

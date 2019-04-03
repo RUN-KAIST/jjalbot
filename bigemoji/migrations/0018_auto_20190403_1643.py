@@ -6,44 +6,32 @@ import django.utils.timezone
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('bigemoji', '0017_deprecate_team_id'),
-    ]
+    dependencies = [("bigemoji", "0017_deprecate_team_id")]
 
     operations = [
-        migrations.AlterUniqueTogether(
-            name='bigemojialias',
-            unique_together=set(),
-        ),
-        migrations.RemoveField(
-            model_name='bigemojialias',
-            name='bigemoji',
-        ),
-        migrations.RemoveField(
-            model_name='bigemojialias',
-            name='owner',
-        ),
-        migrations.RemoveField(
-            model_name='bigemojialias',
-            name='team',
-        ),
+        migrations.AlterUniqueTogether(name="bigemojialias", unique_together=set()),
+        migrations.RemoveField(model_name="bigemojialias", name="bigemoji"),
+        migrations.RemoveField(model_name="bigemojialias", name="owner"),
+        migrations.RemoveField(model_name="bigemojialias", name="team"),
         migrations.AddField(
-            model_name='bigemojistorage',
-            name='date_created',
-            field=models.DateTimeField(auto_now_add=True, default=django.utils.timezone.now, verbose_name='date created'),
+            model_name="bigemojistorage",
+            name="date_created",
+            field=models.DateTimeField(
+                auto_now_add=True,
+                default=django.utils.timezone.now,
+                verbose_name="date created",
+            ),
             preserve_default=False,
         ),
         migrations.AddField(
-            model_name='bigemojistorage',
-            name='date_updated',
-            field=models.DateTimeField(auto_now=True, verbose_name='date updated'),
+            model_name="bigemojistorage",
+            name="date_updated",
+            field=models.DateTimeField(auto_now=True, verbose_name="date updated"),
         ),
         migrations.AlterField(
-            model_name='bigemoji',
-            name='date_created',
-            field=models.DateTimeField(auto_now_add=True, verbose_name='date created'),
+            model_name="bigemoji",
+            name="date_created",
+            field=models.DateTimeField(auto_now_add=True, verbose_name="date created"),
         ),
-        migrations.DeleteModel(
-            name='BigEmojiAlias',
-        ),
+        migrations.DeleteModel(name="BigEmojiAlias"),
     ]

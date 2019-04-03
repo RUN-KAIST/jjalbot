@@ -8,45 +8,89 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('socialaccount', '0003_extra_data_default_dict'),
-        ('slackauth', '0011_auto_20190403_1457'),
+        ("socialaccount", "0003_extra_data_default_dict"),
+        ("slackauth", "0011_auto_20190403_1457"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='SlackBotToken',
+            name="SlackBotToken",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('token', models.TextField(verbose_name='token')),
-                ('extra_data', allauth.socialaccount.fields.JSONField(default=dict)),
-                ('date_created', models.DateTimeField(auto_now=True, verbose_name='date_created')),
-                ('slack_bot_id', models.CharField(max_length=10)),
-                ('app', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='socialaccount.SocialApp')),
-                ('team', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='slackauth.SlackTeam')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("token", models.TextField(verbose_name="token")),
+                ("extra_data", allauth.socialaccount.fields.JSONField(default=dict)),
+                (
+                    "date_created",
+                    models.DateTimeField(auto_now=True, verbose_name="date_created"),
+                ),
+                ("slack_bot_id", models.CharField(max_length=10)),
+                (
+                    "app",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="socialaccount.SocialApp",
+                    ),
+                ),
+                (
+                    "team",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="slackauth.SlackTeam",
+                    ),
+                ),
             ],
         ),
         migrations.CreateModel(
-            name='SlackUserToken',
+            name="SlackUserToken",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('token', models.TextField(verbose_name='token')),
-                ('extra_data', allauth.socialaccount.fields.JSONField(default=dict)),
-                ('date_created', models.DateTimeField(auto_now=True, verbose_name='date_created')),
-                ('scope', models.TextField(blank=True, verbose_name='scope')),
-                ('account', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='slackauth.SlackAccount')),
-                ('app', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='socialaccount.SocialApp')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("token", models.TextField(verbose_name="token")),
+                ("extra_data", allauth.socialaccount.fields.JSONField(default=dict)),
+                (
+                    "date_created",
+                    models.DateTimeField(auto_now=True, verbose_name="date_created"),
+                ),
+                ("scope", models.TextField(blank=True, verbose_name="scope")),
+                (
+                    "account",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="slackauth.SlackAccount",
+                    ),
+                ),
+                (
+                    "app",
+                    models.ForeignKey(
+                        on_delete=django.db.models.deletion.CASCADE,
+                        to="socialaccount.SocialApp",
+                    ),
+                ),
             ],
             options={
-                'verbose_name': 'slack application token',
-                'verbose_name_plural': 'slack application tokens',
+                "verbose_name": "slack application token",
+                "verbose_name_plural": "slack application tokens",
             },
         ),
         migrations.AlterUniqueTogether(
-            name='slackusertoken',
-            unique_together={('app', 'account')},
+            name="slackusertoken", unique_together={("app", "account")}
         ),
         migrations.AlterUniqueTogether(
-            name='slackbottoken',
-            unique_together={('app', 'team')},
+            name="slackbottoken", unique_together={("app", "team")}
         ),
     ]

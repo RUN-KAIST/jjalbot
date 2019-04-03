@@ -6,14 +6,16 @@ import django.db.models.deletion
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('bigemoji', '0014_bigemojistorage_max_entry'),
-    ]
+    dependencies = [("bigemoji", "0014_bigemojistorage_max_entry")]
 
     operations = [
         migrations.AddField(
-            model_name='bigemoji',
-            name='storage',
-            field=models.ForeignKey(null=True, on_delete=django.db.models.deletion.CASCADE, to='bigemoji.BigEmojiStorage'),
-        ),
+            model_name="bigemoji",
+            name="storage",
+            field=models.ForeignKey(
+                null=True,
+                on_delete=django.db.models.deletion.CASCADE,
+                to="bigemoji.BigEmojiStorage",
+            ),
+        )
     ]

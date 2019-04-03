@@ -6,13 +6,12 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('socialaccount', '0003_extra_data_default_dict'),
-        ('slackauth', '0010_modify_slack_token'),
+        ("socialaccount", "0003_extra_data_default_dict"),
+        ("slackauth", "0010_modify_slack_token"),
     ]
 
     operations = [
         migrations.AlterUniqueTogether(
-            name='slacktoken',
-            unique_together={('app', 'account', 'token')},
-        ),
+            name="slacktoken", unique_together={("app", "account", "token")}
+        )
     ]

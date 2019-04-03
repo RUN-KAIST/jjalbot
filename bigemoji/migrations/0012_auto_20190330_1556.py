@@ -6,14 +6,14 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('bigemoji', '0011_bigemoji_alias'),
-    ]
+    dependencies = [("bigemoji", "0011_bigemoji_alias")]
 
     operations = [
         migrations.AlterField(
-            model_name='bigemoji',
-            name='image',
-            field=models.ImageField(null=True, upload_to=bigemoji.models.team_directory),
-        ),
+            model_name="bigemoji",
+            name="image",
+            field=models.ImageField(
+                null=True, upload_to=bigemoji.models.team_directory
+            ),
+        )
     ]
