@@ -110,5 +110,5 @@ class BigEmoji(models.Model):
 
 @receiver(post_delete, sender=BigEmoji)
 def remove_file_on_delete(sender, instance, **kwargs):
-    if not instance.is_alias:
+    if instance.image_file:
         instance.image_file.delete(save=False)
