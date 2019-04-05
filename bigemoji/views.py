@@ -109,46 +109,6 @@ def bigemoji_add(request, account, account_set, is_alias):
 
 @require_POST
 @slack_login_required
-def bigemoji_alias(request, account, account_set):
-    try:
-        team = account.team
-
-        # TODO: Handle race conditions...
-        if team.verified:
-            storage = team.bigemojistorage
-            bigemoji = BigEmoji(owner=account, storage=storage)
-            bigemoji = BigEmojiAliasForm(storage, request.POST, instance=bigemoji).save(commit=False)
-
-            try:
-                bigemoji.save_image()
-            except IntegrityError:
-                # Django seems to raise an error after it saves the file.
-                bigemoji.image_file.delete(save=False)
-                messages.add_message(
-                    request,
-                    messages.ERROR,
-                    'A BigEmoji with that name already exists.'
-                )
-            except BigEmojiFullException:
-                messages.add_message(
-                    request,
-                    messages.ERROR,
-                    'Your workspace\'s BigEmoji storage is full. Please contact the administrators.'
-                )
-        else:
-            messages.add_message(
-                request,
-                messages.ERROR,
-                'Your workspace is not allowed to use this app. Please contact the administrators.'
-            )
-
-        return HttpResponseRedirect(reverse('bigemoji:bigemoji', args=(team.id, account.slack_user_id)))
-    except (BigEmojiStorage.DoesNotExist, ValueError):
-        return HttpResponseNotFound()
-
-
-@require_POST
-@slack_login_required
 def bigemoji_remove(request, account, account_set, bigemoji_name):
     try:
         team = account.team
