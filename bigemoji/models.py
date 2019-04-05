@@ -1,7 +1,7 @@
 import datetime
 
 from django.core.exceptions import ValidationError
-from django.db import models
+from django.db import models, transaction
 from django.db.models.signals import post_delete
 from django.dispatch import receiver
 from django.utils import timezone
@@ -15,9 +15,15 @@ def team_directory(instance, filename):
                              filename)
 
 
+class BigEmojiFullException(Exception):
+    pass
+
+
 class BigEmojiStorage(models.Model):
     team = models.OneToOneField(SlackTeam, on_delete=models.CASCADE)
+    occupied = models.IntegerField()
     max_size = models.IntegerField(default=10000000)
+    entries = models.IntegerField()
     max_entry = models.IntegerField(default=1000)
     delete_eta = models.IntegerField(default=3600)
     date_created = models.DateTimeField(auto_now_add=True, verbose_name='date created')
@@ -25,15 +31,6 @@ class BigEmojiStorage(models.Model):
 
     def __str__(self):
         return self.team.__str__()
-
-    @property
-    def occupied(self):
-        total_size = 0
-        bigemojis = BigEmoji.objects.filter(storage=self)
-        for bigemoji in bigemojis:
-            total_size += bigemoji.image.size
-
-        return total_size
 
 
 class BigEmoji(models.Model):
@@ -79,6 +76,30 @@ class BigEmoji(models.Model):
         else:
             return self.image_file.size
 
+    @transaction.atomic
+    def save_emoji(self):
+        storage = BigEmojiStorage.objects.select_for_update().get(pk=self.storage_id)
+        if storage.entries < storage.max_entry:
+            if self.alias is not None or storage.occupied + self.image_file.size < storage.max_size:
+                self.save()
+                if not self.is_alias:
+                    storage.occupied += self.image_file.size
+                storage.entries += 1
+                storage.save()
+            else:
+                raise BigEmojiFullException()
+        else:
+            raise BigEmojiFullException()
+
+    @transaction.atomic
+    def delete_emoji(self):
+        storage = BigEmojiStorage.objects.select_for_update().get(pk=self.storage_id)
+        if not self.is_alias:
+            storage.occupied -= self.image_file.size
+        storage.entries -= 1
+        storage.save()
+        self.delete()
+
     def was_created_recently(self):
         now = timezone.now()
         return now - datetime.timedelta(days=1) <= self.date_created <= now
@@ -89,5 +110,5 @@ class BigEmoji(models.Model):
 
 @receiver(post_delete, sender=BigEmoji)
 def remove_file_on_delete(sender, instance, **kwargs):
-    if not instance.is_alias:
+    if instance.image_file:
         instance.image_file.delete(save=False)

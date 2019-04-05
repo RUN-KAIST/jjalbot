@@ -9,7 +9,7 @@ from django.views.decorators.http import require_POST
 
 from .decorators import slack_login_required
 from .forms import BigEmojiForm, BigEmojiAliasForm
-from .models import BigEmoji, BigEmojiStorage
+from .models import BigEmoji, BigEmojiStorage, BigEmojiFullException
 from slackauth.models import SlackAccount, SlackTeam
 
 
@@ -33,7 +33,7 @@ def index(request):
 
 
 @slack_login_required
-def bigemoji(request, account, account_set):
+def bigemoji_index(request, account, account_set):
     try:
         team = account.team
         if team.verified:
@@ -66,7 +66,7 @@ def bigemoji(request, account, account_set):
 
 @require_POST
 @slack_login_required
-def bigemoji_add(request, account, account_set):
+def bigemoji_add(request, account, account_set, is_alias):
     try:
         team = account.team
 
@@ -74,70 +74,26 @@ def bigemoji_add(request, account, account_set):
         if team.verified:
             storage = team.bigemojistorage
             bigemoji = BigEmoji(owner=account, storage=storage)
-            form = BigEmojiForm(request.POST, request.FILES, instance=bigemoji)
-
-            if storage.occupied + request.FILES.get('image_file').size <= storage.max_size:
-                if BigEmoji.objects.filter(storage=storage).count() < storage.max_entry:
-                    try:
-                        form.save()
-                    except IntegrityError:
-                        # Django seems to raise an error after it saves the file.
-                        bigemoji.image_file.delete(save=False)
-                        messages.add_message(
-                            request,
-                            messages.ERROR,
-                            'A BigEmoji with that name already exists.'
-                        )
-                else:
-                    messages.add_message(
-                        request,
-                        messages.ERROR,
-                        'You can add up to {} BigEmoji entries.'.format(storage.max_entry)
-                    )
+            if is_alias:
+                bigemoji = BigEmojiAliasForm(storage, request.POST, instance=bigemoji).save(commit=False)
             else:
+                bigemoji = BigEmojiForm(request.POST, request.FILES, instance=bigemoji).save(commit=False)
+
+            try:
+                bigemoji.save_emoji()
+            except IntegrityError:
+                # Django seems to raise an error after it saves the file.
+                bigemoji.image_file.delete(save=False)
+                messages.add_message(
+                    request,
+                    messages.ERROR,
+                    'A BigEmoji with that name already exists.'
+                )
+            except BigEmojiFullException:
                 messages.add_message(
                     request,
                     messages.ERROR,
                     'Your workspace\'s BigEmoji storage is full. Please contact the administrators.'
-                )
-        else:
-            messages.add_message(
-                request,
-                messages.ERROR,
-                'Your workspace is not allowed to use this app. Please contact the administrators.'
-            )
-
-        return HttpResponseRedirect(reverse('bigemoji:bigemoji', args=(team.id, account.slack_user_id)))
-    except (BigEmojiStorage.DoesNotExist, ValueError):
-        return HttpResponseNotFound()
-
-
-@require_POST
-@slack_login_required
-def bigemoji_alias(request, account, account_set):
-    try:
-        team = account.team
-
-        # TODO: Handle race conditions...
-        if team.verified:
-            storage = team.bigemojistorage
-            bigemoji = BigEmoji(owner=account, storage=storage)
-            form = BigEmojiAliasForm(storage, request.POST, instance=bigemoji)
-
-            if BigEmoji.objects.filter(storage=storage).count() < storage.max_entry:
-                try:
-                    form.save()
-                except IntegrityError:
-                    messages.add_message(
-                        request,
-                        messages.ERROR,
-                        'A BigEmoji with that name already exists.'
-                    )
-            else:
-                messages.add_message(
-                    request,
-                    messages.ERROR,
-                    'You can add up to {} BigEmoji entries.'.format(storage.max_entry)
                 )
         else:
             messages.add_message(
@@ -159,7 +115,7 @@ def bigemoji_remove(request, account, account_set, bigemoji_name):
         storage = team.bigemojistorage
         bigemoji = BigEmoji.objects.get(storage=storage, emoji_name=bigemoji_name)
         if bigemoji.owner == account:
-            bigemoji.delete()
+            bigemoji.delete_emoji()
             messages.add_message(
                 request,
                 messages.INFO,

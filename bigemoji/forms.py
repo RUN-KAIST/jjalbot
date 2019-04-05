@@ -1,9 +1,9 @@
 from django import forms
+
 from .models import BigEmoji
 
 
 class BigEmojiForm(forms.ModelForm):
-
     class Meta:
         model = BigEmoji
         fields = ['emoji_name', 'image_file']
