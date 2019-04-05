@@ -33,7 +33,7 @@ def index(request):
 
 
 @slack_login_required
-def bigemoji(request, account, account_set):
+def bigemoji_index(request, account, account_set):
     try:
         team = account.team
         if team.verified:
