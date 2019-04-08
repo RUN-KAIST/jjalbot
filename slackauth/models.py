@@ -127,4 +127,5 @@ class SlackLogin(SocialLogin):
 
     def lookup(self):
         super(SlackLogin, self).lookup()
-        self._save_slack_data()
+        if self.is_existing:
+            self._save_slack_data()
