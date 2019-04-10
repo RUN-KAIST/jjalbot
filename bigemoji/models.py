@@ -21,9 +21,9 @@ class BigEmojiFullException(Exception):
 
 class BigEmojiStorage(models.Model):
     team = models.OneToOneField(SlackTeam, on_delete=models.CASCADE)
-    occupied = models.IntegerField()
+    occupied = models.IntegerField(default=0)
     max_size = models.IntegerField(default=10000000)
-    entries = models.IntegerField()
+    entries = models.IntegerField(default=0)
     max_entry = models.IntegerField(default=1000)
     delete_eta = models.IntegerField(default=3600)
     date_created = models.DateTimeField(auto_now_add=True, verbose_name='date created')
