@@ -48,6 +48,9 @@ def index(request):
             bigemoji_list.delay(team_id, response_url)
             return HttpResponse()
         else:
-            return HttpResponseForbidden()
+            return JsonResponse({
+                'response_type': 'ephemeral',
+                'text': 'Unknown command!'
+            })
     else:
         return HttpResponseForbidden()
