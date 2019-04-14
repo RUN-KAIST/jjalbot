@@ -71,6 +71,17 @@ BIGEMOJI_MAX_ENTRY = 1000
 BIGEMOJI_MAX_SPACE = 10000000
 BIGEMOJI_DELETE_ETA = 604800
 
+BIGEMOJI_SLACKAPP_COMMANDS = {
+    'bigemoji': [
+        '/bigemoji',
+        '/jjaltest',
+    ],
+    'bigemoji_list': [
+        '/bigemoji_list',
+        '/jjallist',
+    ],
+}
+
 SITE_ID = 3
 
 SLACK_TEAM_ID_MAX = 10

@@ -34,7 +34,8 @@ def index(request):
         channel_id = request.POST.get('channel_id')
         response_url = request.POST.get('response_url')
 
-        if cmd in ['/bigemoji', '/jjalbot', '/jjaltest', '/jtest']:
+        commands = settings.BIGEMOJI_SLACKAPP_COMMANDS
+        if cmd in commands.get('bigemoji'):
             if len(cmd_args) == 1:
                 bigemoji_name = cmd_args[0]
                 upload_bigemoji.delay(team_id, channel_id, slack_user_id, bigemoji_name, response_url)
@@ -44,7 +45,7 @@ def index(request):
                     'response_type': 'ephemeral',
                     'text': 'The command should contain exactly 1 argument.'
                 })
-        elif cmd in ['/bigemoji_list', '/jjallist', '/jltest']:
+        elif cmd in commands.get('bigemoji_list'):
             bigemoji_list.delay(team_id, response_url)
             return HttpResponse()
         else:
