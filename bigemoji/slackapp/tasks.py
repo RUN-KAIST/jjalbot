@@ -68,7 +68,6 @@ def upload_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, response_
         SlackAccount.DoesNotExist,
         SlackUserToken.DoesNotExist
     ) as e:
-        print(e)
         slack_delayed_response(response_url, 'You should grant us some permissions. '
                                              'Please visit `https://run.kaist.ac.kr/jjalbot/`.')
     except ValueError:
@@ -97,8 +96,7 @@ def delete_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, timestamp
 
     # Try with passed token, or fetch from DB if fails.
     if not try_delete(token):
-        from ..models import SlackAccount
-        from slackauth.models import SlackUserToken
+        from slackauth.models import SlackAccount, SlackUserToken
 
         try:
             account = SlackAccount.objects.get(team_id=team_id, slack_user_id=slack_user_id)
@@ -110,3 +108,23 @@ def delete_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, timestamp
             try_delete(new_token)
         except (SlackAccount.DoesNotExist, SlackUserToken.DoesNotExist, ValueError):
             pass
+
+
+@shared_task
+def bigemoji_list(team_id, response_url):
+    from ..models import BigEmojiStorage
+    from slackauth.models import SlackTeam
+
+    try:
+        team = SlackTeam.objects.get(pk=team_id)
+        storage = team.bigemojistorage
+        bigemoji_name_list = []
+        for bigemoji in storage.bigemoji_set.all():
+            bigemoji_name_list.append(bigemoji.emoji_name)
+        if bigemoji_name_list:
+            slack_delayed_response(response_url, ', '.join(bigemoji_name_list))
+        else:
+            slack_delayed_response(response_url, 'No BigEmoji exists!')
+    except (SlackTeam.DoesNotExist, BigEmojiStorage.DoesNotExist):
+        slack_delayed_response(response_url, 'Your workspace is not yet allowed to add BigEmojis. '
+                                             'Please contact the administrators.')

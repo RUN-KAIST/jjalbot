@@ -7,7 +7,7 @@ import hmac
 import hashlib
 import shlex
 
-from .tasks import upload_bigemoji
+from .tasks import upload_bigemoji, bigemoji_list
 
 
 def verify_request(request):
@@ -27,20 +27,27 @@ def verify_request(request):
 @require_POST
 def index(request):
     if verify_request(request):
+        cmd = request.POST.get('command')
         cmd_args = shlex.split(request.POST.get('text'))
-        if len(cmd_args) == 1:
-            bigemoji_name = cmd_args[0]
-            slack_user_id = request.POST.get('user_id')
-            team_id = request.POST.get('team_id')
-            channel_id = request.POST.get('channel_id')
-            response_url = request.POST.get('response_url')
+        slack_user_id = request.POST.get('user_id')
+        team_id = request.POST.get('team_id')
+        channel_id = request.POST.get('channel_id')
+        response_url = request.POST.get('response_url')
 
-            upload_bigemoji.delay(team_id, channel_id, slack_user_id, bigemoji_name, response_url)
+        if cmd in ['/bigemoji', '/jjalbot', '/jtest']:
+            if len(cmd_args) == 1:
+                bigemoji_name = cmd_args[0]
+                upload_bigemoji.delay(team_id, channel_id, slack_user_id, bigemoji_name, response_url)
+                return HttpResponse()
+            else:
+                return JsonResponse({
+                    'response_type': 'ephemeral',
+                    'text': 'The command should contain exactly 1 argument.'
+                })
+        elif cmd in ['/bigemoji_list', '/jjallist', '/jltest']:
+            bigemoji_list.delay(team_id, response_url)
             return HttpResponse()
         else:
-            return JsonResponse({
-                'response_type': 'ephemeral',
-                'text': 'The command should contain exactly 1 argument.'
-            })
+            return HttpResponseForbidden()
     else:
         return HttpResponseForbidden()
