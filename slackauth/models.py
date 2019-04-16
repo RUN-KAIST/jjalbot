@@ -118,6 +118,7 @@ class SlackLogin(SocialLogin):
             bot_extra_data = self.access_token.get('bot')
             SlackBotToken.objects.update_or_create(defaults={
                 'token': bot_extra_data.get('bot_access_token'),
+                'slack_bot_id': bot_extra_data.get('bot_user_id'),
                 'extra_data': bot_extra_data,
             }, app=app, team=slack_account.team)
 
