@@ -8,12 +8,20 @@
 {% load static %}
 
 {% block extra_head %}
+<link rel="stylesheet" type="text/css" href="{% static 'style/base.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'bigemoji/style.css' %}">
 {% endblock %}
 
 {% block content %}
 
-<h1>Hello!</h1>
+<header>
+    <a href="{% url 'account_logout' %}"><button>Sign Out</button></a>
+    <a href="{% provider_login_url "slack" process="connect" next=default_url scope=slack_login_scope %}">
+        <button>Sign in to another workspace</button>
+    </a>
+</header>
+
+<h1>JJAL BOT</h1>
 
 {% if error_msg %}
     <p><strong>{{ error_msg }}</strong></p>
@@ -23,12 +31,6 @@
 {% endif %}
 
 {% url 'bigemoji:index' as default_url %}
-
-<p>
-    <a href="{% provider_login_url "slack" process="connect" next=default_url scope=slack_login_scope %}">
-        Sign in to another workspace
-    </a>
-</p>
 
 <form action="{{ default_url }}" method="get">
     <select name="uid">
