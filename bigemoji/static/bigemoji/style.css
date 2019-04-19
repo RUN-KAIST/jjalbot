@@ -34,7 +34,12 @@ th, td {
     color: white;
     background-color: #3377ee;
     display: inline-block;
-    padding: 4px 8px;
+    margin-left: 5px;
+    padding: 6px 8px;
+}
+
+.button:hover {
+    cursor: pointer;
 }
 
 a {
@@ -51,7 +56,8 @@ li {
 }
 
 header {
-    padding-right: 0px;
+    padding: 10px 0;
+    margin-bottom: 20px;
 }
 
 .top-button {
@@ -66,4 +72,64 @@ header {
 .top-button:hover {
     color: #3377ee;
     transition: color 0.2s ease-in-out;
+}
+
+.inline {
+    display: inline-block;
+    height: 40px;
+}
+
+.add-to-slack {
+    vertical-align: middle;
+    display: inline-block;
+    width: 150px;
+}
+
+p {
+    margin: 5px 0;
+}
+
+label {
+    margin-right: 10px;
+}
+
+select {
+    width: 287px;
+    padding: 5px;
+    border-radius: 4px;
+}
+
+form {
+    margin: 5px 0;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+    border-radius: 10px;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+th, td {
+    border-radius: 3px;
+    color: #444444;
+    padding: 10px;
+    text-align: center;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.delete-button {
+    border: none;
+    border-radius: 3px;
+    color: white;
+    background-color: #ee3377;
+    display: inline-block;
+    margin-left: 5px;
+    padding: 6px 8px;
 }
