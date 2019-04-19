@@ -7,14 +7,11 @@
 
 {% block content %}
 
-<h1>{% trans "Sign In" %}</h1>
-
 {% get_providers as socialaccount_providers %}
 
 {% if socialaccount_providers %}
-
 <div class="socialaccount_ballot">
-
+  <h1>JJAL BOT</h1>
   {% url 'bigemoji:index' as default_url %}
 
   <a href="{% provider_login_url "slack" process="login" next=default_url scope=slack_login_scope %}">
