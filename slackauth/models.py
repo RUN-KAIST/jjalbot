@@ -1,11 +1,14 @@
 import datetime
 
 from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.utils import timezone
 
+from allauth.account.models import EmailAddress
+from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.fields import JSONField
-from allauth.socialaccount.models import SocialAccount, SocialApp, SocialLogin
+from allauth.socialaccount.models import SocialAccount, SocialApp, SocialLogin, SocialToken
 
 
 class SlackTeam(models.Model):
@@ -88,6 +91,33 @@ class SlackLogin(SocialLogin):
     def __init__(self, access_token, *args, **kwargs):
         super(SlackLogin, self).__init__(*args, **kwargs)
         self.access_token = access_token
+
+    def serialize(self):
+        ret = super(SlackLogin, self).serialize()
+        ret['access_token'] = self.access_token
+        return ret
+
+    @classmethod
+    def deserialize(cls, data):
+        deserialize_instance = get_adapter().deserialize_instance
+        account = deserialize_instance(SocialAccount, data['account'])
+        user = deserialize_instance(get_user_model(), data['user'])
+        if 'token' in data:
+            token = deserialize_instance(SocialToken, data['token'])
+        else:
+            token = None
+        email_addresses = []
+        for ea in data['email_addresses']:
+            email_address = deserialize_instance(EmailAddress, ea)
+            email_addresses.append(email_address)
+        ret = cls()
+        ret.token = token
+        ret.account = account
+        ret.user = user
+        ret.email_addresses = email_addresses
+        ret.state = data['state']
+        ret.access_token = data['access_token']
+        return ret
 
     def _save_slack_data(self):
         account = self.account
