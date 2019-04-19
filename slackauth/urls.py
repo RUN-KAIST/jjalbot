@@ -7,5 +7,7 @@ from . import views
 
 
 urlpatterns = [
-    path('signup/', views.slack_signup, name='socialaccount_signup')
+    path('slackauth/signup/', views.slack_signup, name='socialaccount_signup')
 ] + default_urlpatterns(SlackProvider)
+
+# urlpatterns = default_urlpatterns(SlackProvider)

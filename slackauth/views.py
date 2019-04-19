@@ -26,7 +26,7 @@ class SlackSignupView(SignupView):
             self.sociallogin = SlackLogin.deserialize(data)
         if not self.sociallogin:
             return HttpResponseRedirect(reverse('account_login'))
-        return super(SlackSignupView, self).dispatch(request, *args, **kwargs)
+        return super(SignupView, self).dispatch(request, *args, **kwargs)
 
 
 slack_signup = SlackSignupView.as_view()

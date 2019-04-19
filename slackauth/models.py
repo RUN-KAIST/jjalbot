@@ -88,9 +88,9 @@ class SlackBotToken(SlackTokenBase):
 
 
 class SlackLogin(SocialLogin):
-    def __init__(self, access_token, *args, **kwargs):
+    def __init__(self, access_token=None, *args, **kwargs):
         super(SlackLogin, self).__init__(*args, **kwargs)
-        self.access_token = access_token
+        self.access_token = access_token or {}
 
     def serialize(self):
         ret = super(SlackLogin, self).serialize()
@@ -137,7 +137,7 @@ class SlackLogin(SocialLogin):
         }, account=account)
 
         app = self.token.app
-        scope = self.access_token['scope']
+        scope = self.access_token.get('scope')
 
         SlackUserToken.objects.update_or_create(defaults={
             'extra_data': self.access_token,
