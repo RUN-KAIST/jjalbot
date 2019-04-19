@@ -21,14 +21,6 @@ from .provider import SlackProvider
 
 class SlackSignupView(SignupView):
     def dispatch(self, request, *args, **kwargs):
-        # Entering this function means that there is a duplicate email.
-        messages.add_message(
-            request,
-            messages.WARNING,
-            'It looks like there is already an account with that email. '
-            'Login with that account and connect to this if possible.'
-        )
-
         self.sociallogin = None
         data = request.session.get('socialaccount_sociallogin')
         if data:
