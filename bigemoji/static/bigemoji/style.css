@@ -16,3 +16,54 @@ table {
 th, td {
     text-align: center;
 }
+
+.top-button {
+    text-align: right;
+}
+
+.logo {
+    display: inline-block;
+    font-size: 36px;
+    font-weight: bold;
+    text-align: left;
+}
+
+.button {
+    border: none;
+    border-radius: 3px;
+    color: white;
+    background-color: #3377ee;
+    display: inline-block;
+    padding: 4px 8px;
+}
+
+a {
+    text-decoration: none;
+}
+
+.menu {
+    float: right;
+    text-align: right;
+}
+
+li {
+    list-style: none;
+}
+
+header {
+    padding-right: 0px;
+}
+
+.top-button {
+    padding: 0px;
+    margin-bottom: 5px;
+    border: none;
+    background-color: white;
+    color: #334455;
+    transition: color 0.2s ease-in-out;
+}
+
+.top-button:hover {
+    color: #3377ee;
+    transition: color 0.2s ease-in-out;
+}
