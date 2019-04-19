@@ -36,4 +36,3 @@ else:
     urlpatterns += [
         re_path(r'^(?P<path>.*)$', RedirectView.as_view(url='{}/%(path)s'.format(settings.REDIRECT_WEB)))
     ]
-

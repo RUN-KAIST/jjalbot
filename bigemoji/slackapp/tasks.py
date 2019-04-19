@@ -47,16 +47,18 @@ def upload_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, response_
                 if channel_id in channel_info:
                     timestamp = min(map(lambda info: info.get('ts', ''), channel_info[channel_id]))
                     break
-            delete_bigemoji.apply_async(eta=datetime.datetime.now() + datetime.timedelta(seconds=delete_eta),
-                                        args=[
-                                            team_id,
-                                            channel_id,
-                                            slack_user_id,
-                                            bigemoji_name,
-                                            timestamp,
-                                            file_id,
-                                            token.token,
-                                        ])
+            delete_bigemoji.apply_async(
+                eta=datetime.datetime.now() + datetime.timedelta(seconds=delete_eta),
+                args=[
+                    team_id,
+                    channel_id,
+                    slack_user_id,
+                    bigemoji_name,
+                    timestamp,
+                    file_id,
+                    token.token,
+                ]
+            )
         else:
             slack_delayed_response(response_url, 'Something went wrong. Please try again!')
 
@@ -67,7 +69,7 @@ def upload_bigemoji(team_id, channel_id, slack_user_id, bigemoji_name, response_
         SlackTeam.DoesNotExist,
         SlackAccount.DoesNotExist,
         SlackUserToken.DoesNotExist
-    ) as e:
+    ):
         slack_delayed_response(response_url, 'You should grant us some permissions. '
                                              'Please visit `https://run.kaist.ac.kr/jjalbot/`.')
     except ValueError:
