@@ -5,6 +5,7 @@
     <title>{% block head_title %}{% endblock %}</title>
     <link rel="shortcut icon" href="{% static 'favicon/favicon.ico' %}" />
     {% block extra_head %}
+    <link rel="stylesheet" type="text/css" href="{% static 'style/base.css' %}">
     {% endblock %}
   </head>
   <body>
@@ -12,25 +13,12 @@
 
     {% if messages %}
     <div>
-      <strong>Messages:</strong>
-      <ul>
+      <div>
         {% for message in messages %}
-        <li>{{message}}</li>
+        <div class="message">{{message}}</div>
         {% endfor %}
-      </ul>
-    </div>
+      </div>
     {% endif %}
-
-    <div>
-      <strong>Menu:</strong>
-      <ul>
-        {% if user.is_authenticated %}
-        <li><a href="{% url 'account_logout' %}">Sign Out</a></li>
-        {% else %}
-        <li><a href="{% url 'account_login' %}">Sign In</a></li>
-        {% endif %}
-      </ul>
-    </div>
     {% block content %}
     {% endblock %}
     {% endblock %}
