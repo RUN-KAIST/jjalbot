@@ -62,13 +62,13 @@
         please grant us file upload and chat update permissions.
     </a>
 </p>
+<div class="inline">{% blocktrans %}Not installed in your workspace? Consider {% endblocktrans %}</div>
 
-<p>{% blocktrans %}Not installed in your workspace? Consider:{% endblocktrans %}</p>
-<a href="{% provider_login_url "slack" process="redirect" next=default_url scope="bot,commands" auth_params="team="|add:team_id %}">
-    <img alt="Add to Slack" height="40" width="139" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" />
-</a>
-
-<br /><br />
+<div class="add-to-slack">
+    <a class="add-to-slack" href="{% provider_login_url "slack" process="redirect" next=default_url scope="bot,commands" auth_params="team="|add:team_id %}">
+        <img alt="Add to Slack" src="https://platform.slack-edge.com/img/add_to_slack.png" srcset="https://platform.slack-edge.com/img/add_to_slack.png 1x, https://platform.slack-edge.com/img/add_to_slack@2x.png 2x" />
+    </a>
+</div>
 
 <form action="{% url 'bigemoji:add' team_id=account_user.team.id slack_user_id=account_user.slack_user_id %}" enctype="multipart/form-data" method="post">
     {% csrf_token %}
@@ -100,7 +100,7 @@
             {% if bigemoji.owner == account_user %}
             <form action="{% url 'bigemoji:remove' team_id=account_user.team.id slack_user_id=account_user.slack_user_id bigemoji_name=bigemoji.emoji_name %}" method="post">
                 {% csrf_token %}
-                <input type="submit" value="Delete" />
+                <input class="delete-button" type="submit" value="Delete" />
             </form>
             {% endif %}
         </td>
