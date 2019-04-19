@@ -1,4 +1,7 @@
 from django.conf import settings
+from django.contrib import messages
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 from allauth.socialaccount.helpers import render_authentication_error
 from allauth.socialaccount.providers.base import AuthError
@@ -8,10 +11,26 @@ from allauth.socialaccount.providers.oauth2.views import (
     OAuth2CallbackView,
     OAuth2LoginView,
 )
+from allauth.socialaccount.views import SignupView
 
 import requests
 
+from .models import SlackLogin
 from .provider import SlackProvider
+
+
+class SlackSignupView(SignupView):
+    def dispatch(self, request, *args, **kwargs):
+        self.sociallogin = None
+        data = request.session.get('socialaccount_sociallogin')
+        if data:
+            self.sociallogin = SlackLogin.deserialize(data)
+        if not self.sociallogin:
+            return HttpResponseRedirect(reverse('account_login'))
+        return super(SignupView, self).dispatch(request, *args, **kwargs)
+
+
+slack_signup = SlackSignupView.as_view()
 
 
 class SlackOAuth2Adapter(OAuth2Adapter):
