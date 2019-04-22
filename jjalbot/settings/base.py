@@ -61,6 +61,8 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+REDIRECT_WEB = None
+
 LOGIN_URL = '/jjalbot/accounts/login'
 LOGIN_REDIRECT_URL = '/jjalbot/admin'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/jjalbot/'
@@ -91,6 +93,8 @@ SLACK_USER_ID_MAX = 10
 SLACK_BOT_ID_MAX = 10
 
 SLACK_LOGIN_SCOPE = 'identity.basic,identity.email,identity.team,identity.avatar'
+
+SERVE_MEDIA = False
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

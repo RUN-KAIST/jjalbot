@@ -26,13 +26,14 @@ urlpatterns = [
     path('jjalbot/', include('bigemoji.urls'))
 ]
 
-if settings.DEBUG:
+if settings.SERVE_MEDIA:
     urlpatterns += [
         re_path(r'^jjalbot/media/(?P<path>.*)$', serve, {
             'document_root': settings.MEDIA_ROOT,
         }),
     ]
-else:
+
+if settings.REDIRECT_WEB:
     urlpatterns += [
         re_path(r'^(?P<path>.*)$', RedirectView.as_view(url='{}/%(path)s'.format(settings.REDIRECT_WEB)))
     ]
