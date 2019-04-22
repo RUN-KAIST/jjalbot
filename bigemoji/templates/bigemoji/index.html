@@ -10,29 +10,28 @@
 {% block extra_head %}
 <link rel="stylesheet" type="text/css" href="{% static 'style/base.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'bigemoji/style.css' %}">
+
+<span class="logo">JJAL BOT</span>
+<div class="menu">
+    <ul>
+        <li>
+            <button class="top-button">
+                <a class="top-button" href="{% url 'account_logout' %}">Sign Out</a>
+            </button>
+        </li>
+        <li>
+            <button class="top-button">
+                {% url 'bigemoji:index' as default_url %}
+                <a class="top-button" href="{% provider_login_url "slack" process="connect" next=default_url scope=slack_login_scope %}">
+                    Sign in to another workspace
+                </a>
+            </button>
+        </li>
+    </ul>
+</div>
 {% endblock %}
 
 {% block content %}
-
-<header>
-    <span class="logo">JJAL BOT</span>
-    <div class="menu">
-        <ul>
-            <li>
-                <button class="top-button">
-                    <a class="top-button" href="{% url 'account_logout' %}">Sign Out</a>
-                </button>
-            </li>
-            <li>
-                <button class="top-button">
-                        <a class="top-button" href="{% provider_login_url "slack" process="connect" next=default_url scope=slack_login_scope %}">
-                                Sign in to another workspace
-                        </a>
-                </button>
-            </li>
-        </ul>
-    </div>
-</header>
 
 {% if error_msg %}
     <p><strong>{{ error_msg }}</strong></p>
@@ -40,8 +39,6 @@
 {% if form_error %}
     {{ form_error }}
 {% endif %}
-
-{% url 'bigemoji:index' as default_url %}
 
 <form action="{{ default_url }}" method="get">
     <select name="uid">
