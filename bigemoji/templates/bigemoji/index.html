@@ -7,6 +7,8 @@
 
 {% load static %}
 
+{% url 'bigemoji:index' as default_url %}
+
 {% block extra_head %}
 <link rel="stylesheet" type="text/css" href="{% static 'style/base.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static 'bigemoji/style.css' %}">
@@ -21,7 +23,6 @@
         </li>
         <li>
             <button class="top-button">
-                {% url 'bigemoji:index' as default_url %}
                 <a class="top-button" href="{% provider_login_url "slack" process="connect" next=default_url scope=slack_login_scope %}">
                     Sign in to another workspace
                 </a>
