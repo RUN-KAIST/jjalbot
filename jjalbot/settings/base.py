@@ -18,7 +18,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
-SECRET_KEY = "10r8drh39gfkodh83r9j2e902eosri29"
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -84,7 +83,7 @@ BIGEMOJI_SLACKAPP_COMMANDS = {
     ],
 }
 
-SITE_ID = 3
+SITE_ID = 0
 
 SLACK_TEAM_ID_MAX = 10
 SLACK_TEAM_NAME_MAX = 255
@@ -170,7 +169,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 
