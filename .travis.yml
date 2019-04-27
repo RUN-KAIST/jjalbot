@@ -25,5 +25,6 @@ before_script:
   - psql -c "alter user jjalbot createdb;" -U postgres
 
 script:
+  - flake8
   - ./manage.py migrate
   - ./manage.py test
