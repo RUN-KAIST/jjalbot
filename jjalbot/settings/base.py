@@ -64,7 +64,7 @@ AUTHENTICATION_BACKENDS = (
 REDIRECT_WEB = None
 
 LOGIN_URL = '/jjalbot/accounts/login'
-LOGIN_REDIRECT_URL = '/jjalbot/admin'
+LOGIN_REDIRECT_URL = '/jjalbot/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/jjalbot/'
 
 BIGEMOJI_APP_ID = 1
