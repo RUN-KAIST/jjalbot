@@ -7,5 +7,5 @@ install:
   - pip install -r requirements.txt
 
 script:
-  - echo "from .base import *\n" > jjalbot/settings/development.py
+  - echo -e "from .base import *\n" > jjalbot/settings/development.py
   - ./manage.py test
