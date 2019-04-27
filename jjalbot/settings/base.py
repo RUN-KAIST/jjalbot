@@ -18,6 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
+SECRET_KEY = 'adfwjf29fj09fpoad2j^_^2eirn2f2je93r2jf'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -92,8 +93,6 @@ SLACK_USER_ID_MAX = 10
 SLACK_BOT_ID_MAX = 10
 
 SLACK_LOGIN_SCOPE = 'identity.basic,identity.email,identity.team,identity.avatar'
-
-SERVE_MEDIA = False
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -186,3 +185,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
+
+SERVE_MEDIA = True
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "media")
+MEDIA_URL = "/jjalbot/media/"

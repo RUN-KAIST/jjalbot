@@ -15,7 +15,7 @@ class SlackTeam(models.Model):
     id = models.CharField(max_length=settings.SLACK_TEAM_ID_MAX, primary_key=True)
     name = models.CharField(max_length=settings.SLACK_TEAM_NAME_MAX)
     domain = models.CharField(max_length=settings.SLACK_TEAM_DOMAIN_MAX, unique=True)
-    verified = models.BooleanField(default=False)
+    verified = models.BooleanField(default=True)
     extra_data = JSONField(default=dict)
     date_created = models.DateTimeField(auto_now_add=True, verbose_name='date created', db_index=True)
     date_updated = models.DateTimeField(auto_now=True, verbose_name='date updated', db_index=True)

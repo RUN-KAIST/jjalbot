@@ -1,9 +1,6 @@
 from .base import *   # noqa F403,F401
 
 
-SECRET_KEY = "abcdefghijklmnopqrstuvwxyz1234567890"
-
-
 # Database
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
