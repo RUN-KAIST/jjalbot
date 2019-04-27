@@ -22,6 +22,7 @@ before_script:
   - psql -c "alter role jjalbot set client_encoding to 'utf-8';" -U postgres
   - psql -c "alter role jjalbot set timezone to 'Asia/Seoul';" -U postgres
   - psql -c "grant all privileges on database jjalbot to jjalbot;" -U postgres
+  - psql -c "alter user jjalbot createdb;" -U postgres
 
 script:
   - ./manage.py migrate
