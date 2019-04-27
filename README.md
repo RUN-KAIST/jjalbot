@@ -1,5 +1,7 @@
 # JJALBot
 
+[![Build Status](https://travis-ci.com/RUN-KAIST/jjalbot.svg?branch=master)](https://travis-ci.com/RUN-KAIST/jjalbot)
+
 ## How to setup your local development environment
 
 **Writing still in progress!**
