@@ -19,7 +19,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
@@ -61,8 +60,10 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
+REDIRECT_WEB = None
+
 LOGIN_URL = '/jjalbot/accounts/login'
-LOGIN_REDIRECT_URL = '/jjalbot/admin'
+LOGIN_REDIRECT_URL = '/jjalbot/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/jjalbot/'
 
 BIGEMOJI_APP_ID = 1
@@ -82,7 +83,7 @@ BIGEMOJI_SLACKAPP_COMMANDS = {
     ],
 }
 
-SITE_ID = 3
+SITE_ID = 1
 
 SLACK_TEAM_ID_MAX = 10
 SLACK_TEAM_NAME_MAX = 255
@@ -91,6 +92,8 @@ SLACK_USER_ID_MAX = 10
 SLACK_BOT_ID_MAX = 10
 
 SLACK_LOGIN_SCOPE = 'identity.basic,identity.email,identity.team,identity.avatar'
+
+SERVE_MEDIA = False
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
@@ -166,7 +169,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Seoul'
 
 USE_I18N = True
 

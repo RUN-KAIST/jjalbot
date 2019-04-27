@@ -1,0 +1,30 @@
+language: python
+
+python:
+  - "3.6"
+
+services:
+  - postgresql
+
+addons:
+  postgresql: "9.4"
+
+install:
+  - pip install -r requirements.txt
+  - pip install psycopg2
+
+env:
+  - DJANGO_SETTINGS_MODULE=jjalbot.settings.travis
+
+before_script:
+  - psql -c "create database jjalbot;" -U postgres
+  - psql -c "create user jjalbot with password 'travis';" -U postgres
+  - psql -c "alter role jjalbot set client_encoding to 'utf-8';" -U postgres
+  - psql -c "alter role jjalbot set timezone to 'Asia/Seoul';" -U postgres
+  - psql -c "grant all privileges on database jjalbot to jjalbot;" -U postgres
+  - psql -c "alter user jjalbot createdb;" -U postgres
+
+script:
+  - flake8
+  - ./manage.py migrate
+  - ./manage.py test
