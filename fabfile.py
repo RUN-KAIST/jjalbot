@@ -31,8 +31,9 @@ def hello(c):
 def deploy(c, branch='master'):
     with c.cd(PROJECT_HOME):
         with c.prefix('source {}/activate jjalbot'.format(ANACONDA_BIN)):
-            c.run('git pull')
+            c.run('git fetch -p')
             c.run('git checkout {}'.format(branch))
+            c.run('git pull')
             c.run('./manage.py migrate --settings=jjalbot.settings.production')
             c.run('./manage.py collectstatic --noinput --settings=jjalbot.settings.production')
 
