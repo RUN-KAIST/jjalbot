@@ -90,6 +90,7 @@ SLACK_TEAM_ID_MAX = 10
 SLACK_TEAM_NAME_MAX = 255
 SLACK_TEAM_DOMAIN_MAX = 21
 SLACK_USER_ID_MAX = 10
+SLACK_USER_NAME_MAX = 255
 SLACK_BOT_ID_MAX = 10
 
 SLACK_LOGIN_SCOPE = 'identity.basic,identity.email,identity.team,identity.avatar'

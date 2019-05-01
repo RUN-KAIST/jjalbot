@@ -36,6 +36,7 @@ class SlackAccount(models.Model):
                                    on_delete=models.CASCADE,
                                    primary_key=True)
     team = models.ForeignKey(SlackTeam, on_delete=models.CASCADE)
+    name = models.CharField(max_length=settings.SLACK_TEAM_NAME_MAX)
     slack_user_id = models.CharField(max_length=settings.SLACK_USER_ID_MAX)
     extra_data = JSONField(default=dict)
     date_created = models.DateTimeField(auto_now_add=True, verbose_name='date created')

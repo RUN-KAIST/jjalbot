@@ -4,13 +4,16 @@ from django.contrib.sites.models import Site
 from django.urls import reverse
 
 from allauth.tests import MockedResponse, mocked_response
-from allauth.socialaccount.models import SocialApp
+from allauth.socialaccount.models import SocialApp, SocialAccount
 
 import json
+import random
+import string
 from urllib.parse import urlparse, parse_qs
 
 from .models import SlackAccount, SlackTeam, SlackUserToken
 from .views import SlackOAuth2Adapter
+from .provider import SlackProvider
 
 
 def generate_access_token(team_id, user_id, bot=False):
@@ -25,19 +28,59 @@ def generate_access_token(team_id, user_id, bot=False):
     return '-'.join(token_list)
 
 
+def _generate_id(id_type):
+    return id_type + ''.join(random.choices(string.ascii_uppercase + string.digits, k=9))
+
+
+def generate_team_id():
+    return _generate_id('T')
+
+
+def generate_user_id():
+    return _generate_id('U')
+
+
+def generate_bot_id():
+    return _generate_id('B')
+
+
 class SlackClient(Client):
-    def slack_login(self, team_name, team_id, user_name, user_id, scope=None, process='login'):
+    def _slack_login(self, team_name, team_id, user_name, user_id,
+                     scope=None, process='login', next_url=None, **kwargs):
         if scope is None:
             scope = settings.SLACK_LOGIN_SCOPE
 
+        if next_url is None:
+            next_url = settings.LOGIN_REDIRECT_URL
+
+        scope_list = scope.split(',')
+        try:
+            app = SocialApp.objects.get_current(SlackProvider.id)
+            account = SlackAccount.objects.get(team_id=team_id, slack_user_id=user_id)
+            current_scope_list = SlackUserToken.objects.get(app=app, slack_account=account).scope.split(',')
+        except (SlackAccount.DoesNotExist, SlackUserToken.DoesNotExist):
+            current_scope_list = []
+
+        current_scope_set = set(current_scope_list)
+        full_scope_list = []
+        for sc in scope_list:
+            if sc not in current_scope_set:
+                full_scope_list.append(sc)
+        full_scope_list.extend(current_scope_list)
+        full_scope = ','.join(full_scope_list)
+
+        access_token = {
+            'access_token': generate_access_token(team_id, user_id),
+            'scope': full_scope,
+        }
+        if 'bot' in full_scope_list:
+            access_token['bot'] = {
+                'bot_user_id': kwargs['bot_user_id'],
+                'bot_access_token': generate_access_token(team_id, user_id, bot=True)
+            }
         access_token_resp = MockedResponse(
             200,
-            json.dumps(
-                {
-                    'access_token': generate_access_token(team_id, user_id),
-                    'scope': scope,
-                }
-            ),
+            json.dumps(access_token),
             {
                 'content-type': 'text/json',
             }
@@ -50,7 +93,7 @@ class SlackClient(Client):
                     "user": {
                         "name": user_name,
                         "id": user_id,
-                        "email": "{}@example.com".format('_'.join(user_name.split())),
+                        "email": "{}_{}@example.com".format('_'.join(user_name.split()), user_id),
                     },
                     "team": {
                         "name": team_name,
@@ -64,7 +107,7 @@ class SlackClient(Client):
             }
         )
         resp = self.get(reverse('slack_login'), {
-            'next': settings.LOGIN_REDIRECT_URL,
+            'next': next_url,
             'process': process,
             'scope': scope,
         })
@@ -84,10 +127,27 @@ class SlackClient(Client):
         with mocked_response(access_token_resp, user_info_resp):
             resp = self.get(reverse('slack_callback'), {'code': '123', 'state': state})
 
-        if resp.status_code != 302:
+        if resp.status_code != 302 or resp.url != next_url:
             return False
 
         return True
+
+    def slack_login(self, team_name, team_id, user_name, user_id):
+        return self._slack_login(team_name, team_id, user_name, user_id)
+
+    def slack_connect(self, team_name, team_id, user_name, user_id):
+        return self._slack_login(team_name, team_id, user_name, user_id, process='connect')
+
+    def slack_install(self, account, bot_user_id):
+        return self._slack_login(
+            account.team.name,
+            account.team.id,
+            account.name,
+            account.slack_user_id,
+            scope='identify,bot,commands',
+            process='redirect',
+            bot_user_id=bot_user_id
+        )
 
 
 class SlackTestCase(TestCase):
@@ -120,7 +180,23 @@ class SlackLoginTest(SlackTestCase):
         self.assertEqual(SlackAccount.objects.filter(team=team, slack_user_id='U0G9QF9C6').count(), 1)
 
         account = SlackAccount.objects.get(team=team, slack_user_id='U0G9QF9C6')
-        self.assertGreaterEqual(SlackUserToken.objects.filter(slack_account=account).count(), 1)
+        self.assertEqual(SlackUserToken.objects.filter(slack_account=account).count(), 1)
+
+    def test_logout(self):
+        self.assertTrue(self.client.slack_login(
+            team_name='test',
+            team_id='T0G9PQBBK',
+            user_name='test',
+            user_id='U0G9QF9C6'
+        ))
+        self.client.logout()
+        self.assertTrue(self.client.slack_login(
+            team_name='test',
+            team_id='T0G9PQBBK',
+            user_name='test',
+            user_id='U0G9QF9C6'
+        ))
+        self.assertEqual(SlackAccount.objects.all().count(), 1)
 
     def test_duplicate_team(self):
         self.assertTrue(self.client.slack_login(
@@ -136,6 +212,7 @@ class SlackLoginTest(SlackTestCase):
             user_name='test2',
             user_id='U0G9QF9C7'
         ))
+        self.assertEqual(SlackAccount.objects.all().count(), 2)
 
     def test_duplicate_user_name(self):
         self.assertTrue(self.client.slack_login(
@@ -151,6 +228,7 @@ class SlackLoginTest(SlackTestCase):
             user_name='test',
             user_id='U0G9QF9C7'
         ))
+        self.assertEqual(SlackAccount.objects.all().count(), 2)
 
     def test_duplicate_user_id(self):
         self.assertTrue(self.client.slack_login(
@@ -166,3 +244,97 @@ class SlackLoginTest(SlackTestCase):
             user_name='test2',
             user_id='U0G9QF9C6'
         ))
+        self.assertEqual(SlackAccount.objects.all().count(), 2)
+
+    def test_many_ids(self):
+        team_ids = [generate_team_id() for _ in range(random.randint(5, 10))]
+        total_team = len(team_ids)
+        total_user = 0
+        for team_id in team_ids:
+            user_ids = [generate_user_id() for _ in range(random.randint(5, 10))]
+            for user_id in user_ids:
+                self.assertTrue(self.client.slack_login(
+                    team_name=team_id,
+                    team_id=team_id,
+                    user_name=user_id,
+                    user_id=user_id,
+                ))
+                self.client.logout()
+            total_user += len(user_ids)
+        self.assertEqual(SlackTeam.objects.all().count(), total_team)
+        self.assertEqual(SlackAccount.objects.all().count(), total_user)
+
+
+class SlackConnectTest(SlackTestCase):
+    def test_connect(self):
+        self.assertTrue(self.client.slack_login(
+            team_name='test',
+            team_id='T0G9PQBBK',
+            user_name='test',
+            user_id='U0G9QF9C6'
+        ))
+        self.assertTrue(self.client.slack_connect(
+            team_name='test2',
+            team_id='T0G9PQBBL',
+            user_name='test',
+            user_id='U0G9QF9C7'
+        ))
+        account = SlackAccount.objects.get(team_id='T0G9PQBBK', slack_user_id='U0G9QF9C6').account
+        user = account.user
+        self.assertEqual(SocialAccount.objects.filter(user=user).count(), 2)
+
+    def test_duplicate_connect(self):
+        self.assertTrue(self.client.slack_login(
+            team_name='test',
+            team_id='T0G9PQBBK',
+            user_name='test',
+            user_id='U0G9QF9C6'
+        ))
+        self.assertTrue(self.client.slack_connect(
+            team_name='test',
+            team_id='T0G9PQBBK',
+            user_name='test',
+            user_id='U0G9QF9C6'
+        ))
+        account = SlackAccount.objects.get(team_id='T0G9PQBBK', slack_user_id='U0G9QF9C6').account
+        user = account.user
+        self.assertEqual(SocialAccount.objects.filter(user=user).count(), 1)
+
+    def test_already_connected(self):
+        self.assertTrue(self.client.slack_login(
+            team_name='test',
+            team_id='T0G9PQBBK',
+            user_name='test',
+            user_id='U0G9QF9C6'
+        ))
+        self.client.logout()
+        self.assertTrue(self.client.slack_login(
+            team_name='test2',
+            team_id='T0G9PQBBL',
+            user_name='test',
+            user_id='U0G9QF9C7'
+        ))
+        self.assertTrue(self.client.slack_connect(
+            team_name='test',
+            team_id='T0G9PQBBK',
+            user_name='test',
+            user_id='U0G9QF9C6'
+        ))
+        account = SlackAccount.objects.get(team_id='T0G9PQBBK', slack_user_id='U0G9QF9C6').account
+        user = account.user
+        self.assertEqual(SocialAccount.objects.filter(user=user).count(), 1)
+        account = SlackAccount.objects.get(team_id='T0G9PQBBL', slack_user_id='U0G9QF9C7').account
+        user = account.user
+        self.assertEqual(SocialAccount.objects.filter(user=user).count(), 1)
+
+
+class SlackInstallTest(SlackTestCase):
+    def test_install(self):
+        self.assertTrue(self.client.slack_login(
+            team_name='test',
+            team_id='T0G9PQBBK',
+            user_name='test',
+            user_id='U0G9QF9C6'
+        ))
+        account = SlackAccount.objects.get(team_id='T0G9PQBBK', slack_user_id='U0G9QF9C6')
+        self.assertTrue(self.client.slack_install(account, 'B2RD9LQ27'))
