@@ -45,11 +45,15 @@ def generate_bot_id():
 
 
 class SlackClient(Client):
-    def _slack_login(self, team_name, team_id, user_name, user_id, scope=None, process='login', **kwargs):
+    def _slack_login(self, team_name, team_id, user_name, user_id,
+                     scope=None, process='login', next_url=None, **kwargs):
         if scope is None:
             scope = settings.SLACK_LOGIN_SCOPE
-        scope_list = scope.split(',')
 
+        if next_url is None:
+            next_url = settings.LOGIN_REDIRECT_URL
+
+        scope_list = scope.split(',')
         try:
             app = SocialApp.objects.get_current(SlackProvider.id)
             account = SlackAccount.objects.get(team_id=team_id, slack_user_id=user_id)
@@ -103,7 +107,7 @@ class SlackClient(Client):
             }
         )
         resp = self.get(reverse('slack_login'), {
-            'next': settings.LOGIN_REDIRECT_URL,
+            'next': next_url,
             'process': process,
             'scope': scope,
         })
@@ -123,7 +127,7 @@ class SlackClient(Client):
         with mocked_response(access_token_resp, user_info_resp):
             resp = self.get(reverse('slack_callback'), {'code': '123', 'state': state})
 
-        if resp.status_code != 302:
+        if resp.status_code != 302 or resp.url != next_url:
             return False
 
         return True
