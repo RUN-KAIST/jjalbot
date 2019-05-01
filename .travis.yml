@@ -28,3 +28,9 @@ script:
   - flake8
   - ./manage.py migrate
   - ./manage.py test
+
+deploy:
+  - provider: script
+    script: fab deploy
+    on:
+      branch: master
