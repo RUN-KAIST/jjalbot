@@ -10,8 +10,9 @@ addons:
   postgresql: "9.4"
 
 install:
-  - pip install -r requirements.txt
-  - pip install psycopg2
+  - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+  - source $HOME/.poetry/env
+  - poetry install -E pgsql
 
 env:
   - DJANGO_SETTINGS_MODULE=jjalbot.settings.travis
@@ -28,6 +29,7 @@ script:
   - flake8
   - ./manage.py migrate
   - ./manage.py test
+  - fab check
 
 deploy:
   - provider: script

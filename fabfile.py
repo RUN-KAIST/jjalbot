@@ -27,15 +27,34 @@ def hello(c):
     c.run('echo hello')
 
 
+def _update(c, branch='master'):
+    c.run('git fetch -p')
+    c.run('git checkout {}'.format(branch))
+    c.run('git pull')
+
+
+@task(hosts=[DEPLOY_CONFIG])
+def update(c, branch='master'):
+    with c.cd(PROJECT_HOME):
+        with c.prefix('source {}/activate jjalbot'.format(ANACONDA_BIN)):
+            _update(c, branch)
+
+
 @task(hosts=[DEPLOY_CONFIG])
 def deploy(c, branch='master'):
     with c.cd(PROJECT_HOME):
         with c.prefix('source {}/activate jjalbot'.format(ANACONDA_BIN)):
-            c.run('git fetch -p')
-            c.run('git checkout {}'.format(branch))
-            c.run('git pull')
-            c.run('./manage.py migrate --settings=jjalbot.settings.production')
+            _update(c, branch)
+            c.run('./manage.py migrate --noinput --settings=jjalbot.settings.production')
             c.run('./manage.py collectstatic --noinput --settings=jjalbot.settings.production')
 
     c.sudo('reload jjalbot', password=SUDO_PASS)
     c.sudo('/etc/init.d/celeryd restart', password=SUDO_PASS)
+
+
+@task(hosts=[DEPLOY_CONFIG])
+def check(c, branch='master'):
+    with c.cd(PROJECT_HOME):
+        with c.prefix('source {}/activate jjalbot'.format(ANACONDA_BIN)):
+            _update(c, branch)
+            c.run('./manage.py check --deploy --fail-level WARNING --settings=jjalbot.settings.production')
