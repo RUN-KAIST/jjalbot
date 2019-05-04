@@ -39,7 +39,7 @@ def update(c, branch='master'):
     with c.cd(PROJECT_HOME):
         with c.prefix('source {}/activate jjalbot'.format(ANACONDA_BIN)):
             _update(c, branch)
-            c.run('{}/poetry install --no-dev'.format(POETRY_BIN))
+            c.run('{}/poetry install -E pgsql --no-dev'.format(POETRY_BIN))
 
 
 @task(hosts=[DEPLOY_CONFIG])
