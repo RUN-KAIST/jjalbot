@@ -32,6 +32,7 @@ def _update(c, branch='master'):
     c.run('git fetch -p origin')
     c.run('git checkout {}'.format(branch))
     c.run('git merge origin/{}'.format(branch))
+    c.run('{}/poetry install -E pgsql --no-dev'.format(POETRY_BIN))
 
 
 @task(hosts=[DEPLOY_CONFIG])
@@ -39,7 +40,6 @@ def update(c, branch='master'):
     with c.cd(PROJECT_HOME):
         with c.prefix('source {}/activate jjalbot'.format(ANACONDA_BIN)):
             _update(c, branch)
-            c.run('{}/poetry install -E pgsql --no-dev'.format(POETRY_BIN))
 
 
 @task(hosts=[DEPLOY_CONFIG])
