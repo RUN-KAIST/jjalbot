@@ -13,9 +13,13 @@ from allauth.socialaccount.providers.oauth2.views import (
 from allauth.socialaccount.views import SignupView
 
 import requests
+import logging
 
 from .models import SlackLogin
 from .provider import SlackProvider
+
+
+logger = logging.getLogger(__name__)
 
 
 class SlackSignupView(SignupView):
@@ -72,13 +76,20 @@ class SlackOAuth2Adapter(OAuth2Adapter):
 class SlackOAuth2LoginView(OAuth2LoginView):
     def dispatch(self, request, *args, **kwargs):
         provider = self.adapter.get_provider()
-        if request.GET.get('process', '') in ('login', 'connect'):
-            if request.GET.get('scope', '') != settings.SLACK_LOGIN_SCOPE:
-                return render_authentication_error(
-                    request,
-                    provider.id,
-                    error=AuthError.DENIED
-                )
+
+        process = request.GET.get('process')
+        scope = request.GET.get('scope')
+
+        if process in ('login', 'connect') and scope != settings.SLACK_LOGIN_SCOPE:
+            logger.info('User {} with wrong scope: {}'.format(process, scope))
+
+            return render_authentication_error(
+                request,
+                provider.id,
+                error=AuthError.DENIED
+            )
+
+        logger.debug('User {} with scope {}'.format(process, scope))
 
         return super(SlackOAuth2LoginView, self).dispatch(request, *args, **kwargs)
 
