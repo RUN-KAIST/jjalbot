@@ -10,8 +10,9 @@ addons:
   postgresql: "9.4"
 
 install:
-  - pip install -r requirements.txt
-  - pip install psycopg2
+  - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
+  - source $HOME/.poetry/env
+  - poetry install -E pgsql
 
 env:
   - DJANGO_SETTINGS_MODULE=jjalbot.settings.travis
@@ -31,6 +32,6 @@ script:
 
 deploy:
   - provider: script
-    script: fab deploy
+    script: fab check --branch "$TRAVIS_BRANCH" deploy --branch "$TRAVIS_BRANCH"
     on:
       branch: master

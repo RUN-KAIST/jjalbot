@@ -10,12 +10,16 @@ Django = "^2.1"
 django-allauth = "^0.39.1"
 Pillow = "^5.4"
 celery = "^4.2"
+psycopg2 = {version = "^2.8",optional = true}
 
 [tool.poetry.dev-dependencies]
 selenium = "^3.141"
 coverage = "^4.5"
 fabric = "^2.4"
 flake8 = "^3.7"
+
+[tool.poetry.extras]
+pgsql = ["psycopg2"]
 
 [build-system]
 requires = ["poetry>=0.12"]
