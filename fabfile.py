@@ -41,6 +41,14 @@ def update(c, branch='master'):
 
 
 @task(hosts=[DEPLOY_CONFIG])
+def check(c, branch='master'):
+    with c.cd(PROJECT_HOME):
+        with c.prefix('source {}/activate jjalbot'.format(ANACONDA_BIN)):
+            _update(c, branch)
+            c.run('./manage.py check --deploy --fail-level WARNING --settings=jjalbot.settings.production')
+
+
+@task(hosts=[DEPLOY_CONFIG])
 def deploy(c, branch='master'):
     with c.cd(PROJECT_HOME):
         with c.prefix('source {}/activate jjalbot'.format(ANACONDA_BIN)):
@@ -50,11 +58,3 @@ def deploy(c, branch='master'):
 
     c.sudo('reload jjalbot', password=SUDO_PASS)
     c.sudo('/etc/init.d/celeryd restart', password=SUDO_PASS)
-
-
-@task(hosts=[DEPLOY_CONFIG])
-def check(c, branch='master'):
-    with c.cd(PROJECT_HOME):
-        with c.prefix('source {}/activate jjalbot'.format(ANACONDA_BIN)):
-            _update(c, branch)
-            c.run('./manage.py check --deploy --fail-level WARNING --settings=jjalbot.settings.production')
