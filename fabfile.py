@@ -32,8 +32,8 @@ def _update(c, branch='master'):
     c.run('git fetch -p origin')
     c.run('git checkout {}'.format(branch))
     c.run('git merge origin/{}'.format(branch))
-    c.run('{}/poetry self:update'.format(POETRY_BIN))
-    c.run('{}/poetry install -E pgsql --no-dev'.format(POETRY_BIN))
+    c.run('{}/poetry self:update -n'.format(POETRY_BIN))
+    c.run('{}/poetry install -n -E pgsql --no-dev'.format(POETRY_BIN))
 
 
 def _check(c):

@@ -12,7 +12,7 @@ addons:
 install:
   - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
   - source $HOME/.poetry/env
-  - poetry install -E pgsql
+  - poetry install -n -E pgsql
 
 env:
   - DJANGO_SETTINGS_MODULE=jjalbot.settings.travis
