@@ -35,6 +35,10 @@ def _update(c, branch='master'):
     c.run('{}/poetry install -E pgsql --no-dev'.format(POETRY_BIN))
 
 
+def _check(c):
+    c.run('./manage.py check --deploy --fail-level WARNING --settings=jjalbot.settings.production')
+
+
 @task(hosts=[DEPLOY_CONFIG])
 def update(c, branch='master'):
     with c.cd(PROJECT_HOME):
@@ -47,7 +51,7 @@ def check(c, branch='master'):
     with c.cd(PROJECT_HOME):
         with c.prefix('source {}/activate jjalbot'.format(ANACONDA_BIN)):
             _update(c, branch)
-            c.run('./manage.py check --deploy --fail-level WARNING --settings=jjalbot.settings.production')
+            _check(c)
 
 
 @task(hosts=[DEPLOY_CONFIG])
@@ -55,6 +59,7 @@ def deploy(c, branch='master'):
     with c.cd(PROJECT_HOME):
         with c.prefix('source {}/activate jjalbot'.format(ANACONDA_BIN)):
             _update(c, branch)
+            _check(c)
             c.run('./manage.py migrate --noinput --settings=jjalbot.settings.production')
             c.run('./manage.py collectstatic --noinput --settings=jjalbot.settings.production')
 

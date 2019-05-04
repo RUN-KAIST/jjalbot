@@ -32,6 +32,6 @@ script:
 
 deploy:
   - provider: script
-    script: fab check --branch "$TRAVIS_BRANCH" deploy --branch "$TRAVIS_BRANCH"
+    script: fab deploy --branch "$TRAVIS_BRANCH"
     on:
       branch: master
