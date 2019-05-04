@@ -8,8 +8,9 @@ DEPLOY_USER = os.environ.get('DEPLOY_USER')
 DEPLOY_PORT = os.environ.get('DEPLOY_PORT')
 DEPLOY_KEY = os.environ.get('DEPLOY_KEY')
 
-PROJECT_HOME = '/home/{}/jjalbot'.format(DEPLOY_USER)
-ANACONDA_BIN = '/home/{}/anaconda3/bin'.format(DEPLOY_USER)
+PROJECT_HOME = '$HOME/jjalbot'
+ANACONDA_BIN = '$HOME/anaconda3/bin'
+POETRY_BIN = '$HOME/.poetry/bin'
 SUDO_PASS = os.environ.get('SUDO_PASS')
 
 DEPLOY_CONFIG = {
@@ -38,6 +39,7 @@ def update(c, branch='master'):
     with c.cd(PROJECT_HOME):
         with c.prefix('source {}/activate jjalbot'.format(ANACONDA_BIN)):
             _update(c, branch)
+            c.run('{}/poetry install --no-dev'.format(POETRY_BIN))
 
 
 @task(hosts=[DEPLOY_CONFIG])
