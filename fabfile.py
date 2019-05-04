@@ -28,9 +28,9 @@ def hello(c):
 
 
 def _update(c, branch='master'):
-    c.run('git fetch -p')
+    c.run('git fetch -p origin')
     c.run('git checkout {}'.format(branch))
-    c.run('git pull')
+    c.run('git merge origin/{}'.format(branch))
 
 
 @task(hosts=[DEPLOY_CONFIG])
