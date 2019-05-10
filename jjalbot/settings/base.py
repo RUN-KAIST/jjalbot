@@ -191,3 +191,5 @@ SERVE_MEDIA = True
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/jjalbot/media/"
+
+FILE_UPLOAD_PERMISSIONS = 0o644
