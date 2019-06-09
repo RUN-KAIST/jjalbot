@@ -35,13 +35,13 @@ Or you can just `pip install -r requirements.txt`.
 1. Prepare your own [Slack app](https://api.slack.com/apps).
 
 1. Add Slack slash commands `/bigemoji` and `/bigemoji_list`, which both POST
-to `https://localhost:8000/jjalbot/app/`.
+to `http://localhost:8000/jjalbot/app/`.
 
 1. Run `python manage.py migrate`, and create a super user by `python manage.py createsuperuser`.
 
 1. Open `http://localhost:8000/jjalbot/admin/`, and login with the user you just created.
 
-1. In `SITES` category, open `Sites` admin page and change the domain name example.com to localhost.
+1. In `SITES` category, open `Sites` admin page and change the domain name `example.com` to `localhost:8000`.
 
 1. In `SOCIAL ACCOUNTS` category, open `Social applications` admin page and click 
 `ADD SOCIAL APPLICATION`. 
