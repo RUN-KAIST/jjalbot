@@ -5,8 +5,15 @@ from .models import BigEmoji, BigEmojiStorage
 # Register your models here.
 
 
+class BigEmojiInlineAdmin(admin.TabularInline):
+    model = BigEmoji
+    extra = 0
+
+
 class BigEmojiStorageAdmin(admin.ModelAdmin):
     list_display = ('team', 'max_entry', 'max_size', 'occupied')
+    readonly_fields = ('occupied',)
+    inlines = (BigEmojiInlineAdmin,)
 
 
 class BigEmojiAdmin(admin.ModelAdmin):
