@@ -59,8 +59,7 @@ def bigemoji_index(request, account, account_set):
             'bigemojis': bigemojis,
         })
 
-    except ValueError as e:
-        print(e)
+    except ValueError:
         return HttpResponseNotFound()
 
 
@@ -70,7 +69,6 @@ def bigemoji_add(request, account, account_set, is_alias):
     try:
         team = account.team
 
-        # TODO: Handle race conditions...
         if team.verified:
             storage = team.bigemojistorage
             bigemoji = BigEmoji(owner=account, storage=storage)
@@ -103,7 +101,8 @@ def bigemoji_add(request, account, account_set, is_alias):
             )
 
         return HttpResponseRedirect(reverse('bigemoji:bigemoji', args=(team.id, account.slack_user_id)))
-    except (BigEmojiStorage.DoesNotExist, ValueError):
+    except (BigEmojiStorage.DoesNotExist, ValueError) as e:
+        print(e)
         return HttpResponseNotFound()
 
 

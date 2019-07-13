@@ -45,13 +45,16 @@ def generate_bot_id():
 
 
 class SlackClient(Client):
-    def _slack_login(self, team_name, team_id, user_name, user_id,
+    def _slack_login(self, team_name, team_id, user_name, user_id, user_email=None,
                      scope=None, process='login', next_url=None, **kwargs):
         if scope is None:
             scope = settings.SLACK_LOGIN_SCOPE
 
         if next_url is None:
             next_url = settings.LOGIN_REDIRECT_URL
+
+        if user_email is None:
+            user_email = '{}_{}@example.com'.format('_'.join(user_name.split()), user_id)
 
         scope_list = scope.split(',')
         try:
@@ -93,7 +96,7 @@ class SlackClient(Client):
                     "user": {
                         "name": user_name,
                         "id": user_id,
-                        "email": "{}_{}@example.com".format('_'.join(user_name.split()), user_id),
+                        "email": user_email,
                     },
                     "team": {
                         "name": team_name,
@@ -132,11 +135,11 @@ class SlackClient(Client):
 
         return True
 
-    def slack_login(self, team_name, team_id, user_name, user_id):
-        return self._slack_login(team_name, team_id, user_name, user_id)
+    def slack_login(self, team_name, team_id, user_name, user_id, user_email=None):
+        return self._slack_login(team_name, team_id, user_name, user_id, user_email)
 
-    def slack_connect(self, team_name, team_id, user_name, user_id):
-        return self._slack_login(team_name, team_id, user_name, user_id, process='connect')
+    def slack_connect(self, team_name, team_id, user_name, user_id, user_email=None):
+        return self._slack_login(team_name, team_id, user_name, user_id, user_email, process='connect')
 
     def slack_install(self, account, bot_user_id):
         return self._slack_login(
@@ -326,6 +329,23 @@ class SlackConnectTest(SlackTestCase):
         account = SlackAccount.objects.get(team_id='T0G9PQBBL', slack_user_id='U0G9QF9C7').account
         user = account.user
         self.assertEqual(SocialAccount.objects.filter(user=user).count(), 1)
+
+    def test_email_exists(self):
+        self.assertTrue(self.client.slack_login(
+            team_name='test',
+            team_id='T0G9PQBBK',
+            user_name='test',
+            user_id='U0G9QF9C6',
+            user_email='test@example.com'
+        ))
+        self.client.logout()
+        self.assertFalse(self.client.slack_login(
+            team_name='test2',
+            team_id='T0G9PQBBL',
+            user_name='test',
+            user_id='U0G9QF9C7',
+            user_email='test@example.com'
+        ))
 
 
 class SlackInstallTest(SlackTestCase):

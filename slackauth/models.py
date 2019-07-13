@@ -1,4 +1,5 @@
 import datetime
+import logging
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -9,6 +10,9 @@ from allauth.account.models import EmailAddress
 from allauth.socialaccount.adapter import get_adapter
 from allauth.socialaccount.fields import JSONField
 from allauth.socialaccount.models import SocialAccount, SocialApp, SocialLogin, SocialToken
+
+
+logger = logging.getLogger(__name__)
 
 
 class SlackTeam(models.Model):
@@ -145,13 +149,18 @@ class SlackLogin(SocialLogin):
             'token': self.token.token,
             'scope': scope,
         }, app=app, slack_account=slack_account)
+
+        logger.debug('Updated Slack user data of {} / {}'.format(team.id, slack_account.slack_user_id))
+
         if 'bot' in self.access_token:
             bot_extra_data = self.access_token.get('bot')
             SlackBotToken.objects.update_or_create(defaults={
                 'token': bot_extra_data.get('bot_access_token'),
                 'slack_bot_id': bot_extra_data.get('bot_user_id'),
                 'extra_data': bot_extra_data,
-            }, app=app, team=slack_account.team)
+            }, app=app, team=team)
+
+            logger.debug('Updated Slack bot data of {}'.format(team.id))
 
     def save(self, request, connect=False):
         super(SlackLogin, self).save(request, connect)
