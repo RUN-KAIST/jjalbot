@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'bigemoji.slack',
     'bigemoji.slackapp',
 
+    'chatbot',
+
     'slackauth',
 ]
 

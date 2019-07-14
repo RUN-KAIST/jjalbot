@@ -6,7 +6,7 @@ import re
 import os
 import datetime
 
-from .utils import slack_delayed_response, slack_api_call
+from slackauth.utils import slack_delayed_response, slack_api_call
 
 
 @shared_task
