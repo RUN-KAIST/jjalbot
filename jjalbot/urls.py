@@ -23,6 +23,7 @@ from django.views.generic.base import RedirectView
 urlpatterns = [
     path('jjalbot/admin/', admin.site.urls),
     path('jjalbot/accounts/', include('allauth.urls')),
+    path('jjalbot/chatbot/', include('chatbot.urls')),
     path('jjalbot/', include('bigemoji.urls'))
 ]
 

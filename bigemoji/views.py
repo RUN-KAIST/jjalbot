@@ -7,9 +7,9 @@ from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.urls import reverse
 from django.views.decorators.http import require_POST
 
-from .decorators import slack_login_required
 from .forms import BigEmojiForm, BigEmojiAliasForm
 from .models import BigEmoji, BigEmojiStorage, BigEmojiFullException
+from slackauth.decorators import slack_login_required
 from slackauth.models import SlackAccount, SlackTeam
 
 
