@@ -13,7 +13,7 @@ Click==7.0
 coverage==4.5.3
 cryptography==2.7
 defusedxml==0.6.0
-Django==2.2.3
+Django==2.2.4
 django-allauth==0.39.1
 entrypoints==0.3
 fabric==2.4.0
