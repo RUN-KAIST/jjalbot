@@ -8,7 +8,7 @@ authors = ["kuratowski <tonyshin@kaist.ac.kr>"]
 python = "^3.6"
 Django = "^2.1"
 django-allauth = "^0.39.1"
-Pillow = "^5.4"
+Pillow = "^6.2"
 celery = "^4.2"
 psycopg2 = {version = "^2.8",optional = true}
 
