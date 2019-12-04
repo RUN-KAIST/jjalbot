@@ -6,7 +6,7 @@ authors = ["kuratowski <tonyshin@kaist.ac.kr>"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
-Django = "^2.1"
+Django = "^2.2"
 django-allauth = "^0.39.1"
 Pillow = "^6.2"
 celery = "^4.2"
