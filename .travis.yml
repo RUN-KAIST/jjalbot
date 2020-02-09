@@ -4,10 +4,10 @@ services:
 
 script:
   - docker-compose build
-  - docker-compose run jjalbot sh startup.sh
+  - docker-compose run jjalbot sh check.sh
 
 deploy:
   - provider: script
-    script: fab deploy --branch "$TRAVIS_BRANCH"
+    script: sh deploy.sh
     on:
       branch: master
