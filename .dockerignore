@@ -1,0 +1,6 @@
+data/
+jjalbot.egg-info/
+.git/
+.idea/
+db.sqlite3
+.coverage
