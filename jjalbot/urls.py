@@ -17,14 +17,15 @@ from django.conf import settings
 from django.contrib import admin
 from django.urls import path, include, re_path
 from django.views.static import serve
-from django.views.generic.base import RedirectView
 
 
 urlpatterns = [
-    path('jjalbot/admin/', admin.site.urls),
-    path('jjalbot/accounts/', include('allauth.urls')),
-    path('jjalbot/chatbot/', include('chatbot.urls')),
-    path('jjalbot/', include('bigemoji.urls'))
+    path('jjalbot/', include([
+        path('admin/', admin.site.urls),
+        path('accounts/', include('allauth.urls')),
+        path('chatbot/', include('chatbot.urls')),
+        path('', include('bigemoji.urls'))
+    ]))
 ]
 
 if settings.SERVE_MEDIA:
@@ -32,9 +33,4 @@ if settings.SERVE_MEDIA:
         re_path(r'^jjalbot/media/(?P<path>.*)$', serve, {
             'document_root': settings.MEDIA_ROOT,
         }),
-    ]
-
-if settings.REDIRECT_WEB:
-    urlpatterns += [
-        re_path(r'^(?P<path>.*)$', RedirectView.as_view(url='{}/%(path)s'.format(settings.REDIRECT_WEB)))
     ]

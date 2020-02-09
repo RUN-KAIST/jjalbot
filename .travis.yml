@@ -1,37 +1,13 @@
-language: python
-
-python:
-  - "3.6"
-
+sudo: required
 services:
-  - postgresql
-
-addons:
-  postgresql: "9.4"
-
-install:
-  - curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
-  - source $HOME/.poetry/env
-  - poetry install -n -E pgsql
-
-env:
-  - DJANGO_SETTINGS_MODULE=jjalbot.settings.travis
-
-before_script:
-  - psql -c "create database jjalbot;" -U postgres
-  - psql -c "create user jjalbot with password 'travis';" -U postgres
-  - psql -c "alter role jjalbot set client_encoding to 'utf-8';" -U postgres
-  - psql -c "alter role jjalbot set timezone to 'Asia/Seoul';" -U postgres
-  - psql -c "grant all privileges on database jjalbot to jjalbot;" -U postgres
-  - psql -c "alter user jjalbot createdb;" -U postgres
+  - docker
 
 script:
-  - flake8
-  - ./manage.py migrate
-  - ./manage.py test
+  - docker-compose build
+  - docker-compose run jjalbot sh check.sh
 
 deploy:
   - provider: script
-    script: fab deploy --branch "$TRAVIS_BRANCH"
+    script: sh deploy.sh
     on:
       branch: master
