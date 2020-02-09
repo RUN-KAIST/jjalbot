@@ -11,10 +11,10 @@ celery = "^4.4.0"
 Pillow = "^7.0.0"
 gunicorn = "^20.0.4"
 psycopg2 = "^2.8.4"
-flake8 = "^3.7.9"
 django-allauth = "^0.41.0"
 
 [tool.poetry.dev-dependencies]
+flake8 = "^3.7.9"
 black = "^19.10b0"
 coverage = "^5.0.3"
 
