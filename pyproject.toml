@@ -17,7 +17,6 @@ django-allauth = "^0.41.0"
 [tool.poetry.dev-dependencies]
 black = "^19.10b0"
 coverage = "^5.0.3"
-fabric = "^2.5.0"
 
 [build-system]
 requires = ["poetry>=0.12"]

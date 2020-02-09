@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 # Wait until PostgreSQL is ready
 until echo "select 1;" | python manage.py dbshell > /dev/null 2>&1; do
   >&2 echo "Database is unavailable - sleeping"

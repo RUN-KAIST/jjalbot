@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 # Install dev dependencies
 "${HOME}"/.poetry/bin/poetry install --no-root
 

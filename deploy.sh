@@ -1,5 +1,7 @@
 #!/bin/sh
 
+set -e
+
 # Push new image
 docker build -t joonhyung/jjalbot:latest .
 printf "%s" "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USER}" --password-stdin
