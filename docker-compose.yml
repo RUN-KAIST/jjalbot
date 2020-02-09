@@ -4,12 +4,17 @@ services:
   psql:
     image: postgres:11
     volumes:
-      - ./data:/var/lib/postgresql/data
+      - ./data/psql:/var/lib/postgresql/data
     environment:
       - POSTGRES_DB=jjalbot
       - POSTGRES_USER=jjalbot
       - POSTGRES_PASSWORD=jjalbot
       - POSTGRES_INITDB_ARGS=--encoding=UTF-8
+
+  rabbitmq:
+    image: rabbitmq:3.8
+    volumes:
+      - ./data/rabbitmq:/var/lib/rabbitmq/mnesia
 
   jjalbot:
     build:
@@ -25,6 +30,10 @@ services:
       - DB_USER=jjalbot
       - DB_PASSWORD=jjalbot
       - DB_PORT=5432
+      - CELERY_BROKER_USER=guest
+      - CELERY_BROKER_PASSWORD=guest
+      - CELERY_BROKER_HOST=rabbitmq
+      - CELERY_BROKER_URL=amqp://guest:guest@rabbitmq/
     ports:
       - "8000:8000"
     command: sh startup.sh

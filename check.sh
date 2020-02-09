@@ -1,5 +1,8 @@
 #!/bin/sh
 
+# Install dev dependencies
+"${HOME}"/.poetry/bin/poetry install --no-root
+
 # Lint
 flake8
 

@@ -11,7 +11,7 @@ RUN apk add nginx
 RUN apk add postgresql-dev
 
 # Pillow dependencies
-RUN apk add jpeg-dev zlib-dev
+RUN apk add build-base jpeg-dev zlib-dev
 
 # Install Poetry
 RUN apk add curl
