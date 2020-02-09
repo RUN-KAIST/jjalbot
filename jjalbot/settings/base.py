@@ -18,14 +18,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__fil
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
-SECRET_KEY = 'adfwjf29fj09fpoad2j^_^2eirn2f2je93r2jf'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-
-ALLOWED_HOSTS = [
-    '*'
-]
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 
 # Application definition
@@ -38,20 +31,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
-
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
-
-    # 'allauth.socialaccount.providers.google',
-    # 'allauth.socialaccount.providers.slack',
-
     'bigemoji',
     'bigemoji.slack',
     'bigemoji.slackapp',
-
     'chatbot',
-
     'slackauth',
 ]
 
@@ -63,10 +49,8 @@ AUTHENTICATION_BACKENDS = (
     'allauth.account.auth_backends.AuthenticationBackend',
 )
 
-REDIRECT_WEB = None
-
-LOGIN_URL = '/jjalbot/accounts/login'
-LOGIN_REDIRECT_URL = '/jjalbot/'
+LOGIN_URL = '/jjalbot/accounts/login/'
+LOGIN_REDIRECT_URL = '/jjalbot/admin/'
 ACCOUNT_LOGOUT_REDIRECT_URL = '/jjalbot/'
 
 BIGEMOJI_APP_ID = 1
@@ -79,10 +63,12 @@ BIGEMOJI_SLACKAPP_COMMANDS = {
     'bigemoji': [
         '/bigemoji',
         '/jjaltest',
+        '/jb',
     ],
     'bigemoji_list': [
         '/bigemoji_list',
         '/jjallist',
+        '/jl',
     ],
 }
 
@@ -97,6 +83,8 @@ SLACK_BOT_ID_MAX = 10
 
 SLACK_LOGIN_SCOPE = 'identity.basic,identity.email,identity.team,identity.avatar'
 
+SLACK_APP_SIGNING_SECRET = os.getenv('SLACK_APP_SIGINING_SECRET')
+
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -109,6 +97,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+X_FRAME_OPTIONS = 'DENY'
 
 ROOT_URLCONF = 'jjalbot.urls'
 
@@ -134,17 +124,6 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'jjalbot.wsgi.application'
-
-
-# Database
-# https://docs.djangoproject.com/en/2.1/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
-}
 
 CACHES = {
     'default': {
@@ -190,18 +169,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 
-STATIC_URL = '/static/'
+STATIC_URL = '/jjalbot/static/'
 
-STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-]
-
-SERVE_MEDIA = True
-
-MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 MEDIA_URL = "/jjalbot/media/"
 
 FILE_UPLOAD_PERMISSIONS = 0o644
+
 
 # Logging
 

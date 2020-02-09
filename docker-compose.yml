@@ -1,0 +1,30 @@
+version: '3'
+
+services:
+  psql:
+    image: postgres:11
+    volumes:
+      - ./data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=jjalbot
+      - POSTGRES_USER=jjalbot
+      - POSTGRES_PASSWORD=jjalbot
+      - POSTGRES_INITDB_ARGS=--encoding=UTF-8
+
+  jjalbot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - psql
+    environment:
+      - DJANGO_SETTINGS_MODULE=jjalbot.settings.docker_compose
+      - SECRET_KEY="0208l99h(ilx5*&mq1i%*kt(ls^!aq+r*axfhe9ov&ez&*_qg("
+      - DB_HOST=psql
+      - DB_NAME=jjalbot
+      - DB_USER=jjalbot
+      - DB_PASSWORD=jjalbot
+      - DB_PORT=5432
+    ports:
+      - "8000:8000"
+    command: sh startup.sh

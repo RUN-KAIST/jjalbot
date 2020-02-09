@@ -6,7 +6,6 @@ from PIL import Image
 from io import BytesIO
 import os
 import shutil
-import six
 
 from slackauth.tests import SlackTestCase, SlackClient
 
@@ -107,7 +106,7 @@ class BigEmojiClient(SlackClient):
         )
 
     def add_alias(self, team_id, slack_user_id, emoji_name, bigemoji):
-        if isinstance(bigemoji, six.string_types):
+        if isinstance(bigemoji, str):
             bigemoji = BigEmoji.objects.get(storage__team_id=team_id, emoji_name=bigemoji)
 
         return self.post(

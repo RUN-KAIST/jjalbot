@@ -106,10 +106,7 @@ venv.bak/
 # idea
 .idea/
 
-# BigEmoji
-jjalbot/settings/production.py
-jjalbot/settings/development.py
-
 # ETC
 .DS_Store
 pip-wheel-metadata/
+data/
