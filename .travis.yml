@@ -1,4 +1,8 @@
-sudo: required
+language: minimal
+
+os:
+  - linux
+
 services:
   - docker
 

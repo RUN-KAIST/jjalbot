@@ -24,13 +24,12 @@
 
 ## Development guide
 
-**Writing still in progress!**
+1. If you have [Docker](https://www.docker.com/) and [Docker Compose](https://docs.docker.com/compose/),
+you can just run `docker-compose up`. Otherwise, follow the steps below.
 
-1. Activate your own virtual environment. 
-The recommended way is to use [Poetry](https://github.com/sdispater/poetry). 
+1. Install [Poetry](https://github.com/sdispater/poetry). 
 
-1. Install required project dependencies. With Poetry, it is as simple as `poetry install`. 
-Or you can just `pip install -r requirements.txt`.
+1. Install required project dependencies. It is as simple as `poetry install`.
 
 1. Prepare your own [Slack app](https://api.slack.com/apps).
 
