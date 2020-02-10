@@ -13,15 +13,15 @@ X_REGISTRY_AUTH=$(echo -n "{
   \"password\": \"${DOCKER_PASSWORD}\"
 }" | base64)
 curl -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
-     "${DOCKER_API_URL}"/images/joonhyung%2Fjjalbot%3Alatest/tag\?repo\=joonhyung%2Fjjalbot\&tag\=legacy
+     "${DOCKER_API_URL}/images/joonhyung%2Fjjalbot%3Alatest/tag?repo=joonhyung%2Fjjalbot&tag=legacy"
 curl -f -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" -H "X-Registry-Auth: ${X_REGISTRY_AUTH}" \
-     "${DOCKER_API_URL}"/images/create\?fromImage\=joonhyung%2Fjjalbot%3Alatest
+     "${DOCKER_API_URL}/images/create?fromImage=joonhyung%2Fjjalbot%3Alatest"
 
 # Recreate container through Docker Engine API
 curl -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
-     "${DOCKER_API_URL}"/containers/jjalbot/stop
+     "${DOCKER_API_URL}/containers/jjalbot/stop"
 curl -X DELETE -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
-     "${DOCKER_API_URL}"/containers/jjalbot
+     "${DOCKER_API_URL}/containers/jjalbot"
 curl -f -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
      -H "Content-type: application/json" \
      -d \
@@ -54,10 +54,10 @@ curl -f -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
                \"CELERY_BROKER_URL=${CELERY_BROKER_URL}\"
            ]
        }" \
-     "${DOCKER_API_URL}"/containers/create\?name\=jjalbot
+     "${DOCKER_API_URL}/containers/create?name=jjalbot"
 curl -f -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
-     "${DOCKER_API_URL}"/containers/jjalbot/start
+     "${DOCKER_API_URL}/containers/jjalbot/start"
      
 # Delete the old image
 curl -X DELETE -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
-     "${DOCKER_API_URL}"/images/joonhyung%2Fjjalbot%3Alegacy
+     "${DOCKER_API_URL}/images/joonhyung%2Fjjalbot%3Alegacy"
