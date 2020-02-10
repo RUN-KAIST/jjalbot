@@ -40,6 +40,7 @@ curl -f -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
                \"CELERY_BROKER_USER=${CELERY_BROKER_USER}\",
                \"CELERY_BROKER_PASSWORD=${CELERY_BROKER_PASSWORD}\",
                \"CELERY_BROKER_HOST=${CELERY_BROKER_HOST}\",
+               \"CELERY_BROKER_VHOST=${CELERY_BROKER_VHOST}\",
                \"CELERY_BROKER_URL=${CELERY_BROKER_URL}\"
            ]
        }" \
