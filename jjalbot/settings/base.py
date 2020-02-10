@@ -83,7 +83,7 @@ SLACK_BOT_ID_MAX = 10
 
 SLACK_LOGIN_SCOPE = 'identity.basic,identity.email,identity.team,identity.avatar'
 
-SLACK_APP_SIGNING_SECRET = os.getenv('SLACK_APP_SIGINING_SECRET')
+SLACK_APP_SIGNING_SECRET = os.getenv('SLACK_APP_SIGNING_SECRET')
 
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 # EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
