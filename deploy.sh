@@ -8,9 +8,9 @@ printf "%s" "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USER}" --pa
 docker push joonhyung/jjalbot:latest
 
 # Recreate container through Docker Engine API
-curl -f -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
+curl -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
      "${DOCKER_API_URL}"/containers/jjalbot/stop
-curl -f -X DELETE -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
+curl -X DELETE -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
      "${DOCKER_API_URL}"/containers/jjalbot
 curl -f -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
      -H "Content-type: application/json" \
