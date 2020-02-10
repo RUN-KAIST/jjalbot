@@ -7,6 +7,16 @@ docker build -t joonhyung/jjalbot:latest .
 printf "%s" "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USER}" --password-stdin
 docker push joonhyung/jjalbot:latest
 
+# Pull the new image
+X_REGISTRY_AUTH=$(echo -n "{
+  \"username\": \"${DOCKER_USER}\",
+  \"password\": \"${DOCKER_PASSWORD}\"
+}" | base64)
+curl -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
+     "${DOCKER_API_URL}"/images/joonhyung%2Fjjalbot%3Alatest/tag\?repo\=joonhyung%2Fjjalbot\&tag\=legacy
+curl -f -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" -H "X-Registry-Auth: ${X_REGISTRY_AUTH}" \
+     "${DOCKER_API_URL}"/images/create\?fromImage\=joonhyung%2Fjjalbot%3Alatest
+
 # Recreate container through Docker Engine API
 curl -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
      "${DOCKER_API_URL}"/containers/jjalbot/stop
@@ -47,3 +57,7 @@ curl -f -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
      "${DOCKER_API_URL}"/containers/create\?name\=jjalbot
 curl -f -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
      "${DOCKER_API_URL}"/containers/jjalbot/start
+     
+# Delete the old image
+curl -X DELETE -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
+     "${DOCKER_API_URL}"/images/joonhyung%2Fjjalbot%3Alegacy
