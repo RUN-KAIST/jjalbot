@@ -18,7 +18,10 @@ curl -f -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
       "{
            \"Image\": \"joonhyung/jjalbot:latest\",
            \"Volumes\": {
-               \"/volumes/jjalbot_data\": \"/var/jjalbot\"
+               \"/var/jjalbot\": {}
+           },
+           \"HostConfig\": {
+               \"Binds\": [\"jjalbot_data:/var/jjalbot\"]
            },
            \"NetworkingConfig\": {
                \"EndpointsConfig\": {
@@ -40,4 +43,6 @@ curl -f -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
                \"CELERY_BROKER_URL=${CELERY_BROKER_URL}\",
            ]
        }" \
-     "${DOCKER_API_URL}"/containers/create?name=jjalbot
+     "${DOCKER_API_URL}"/containers/create\?name\=jjalbot
+curl -f -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
+     "${DOCKER_API_URL}"/containers/jjalbot/start
