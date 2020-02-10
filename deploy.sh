@@ -8,10 +8,10 @@ printf "%s" "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USER}" --pa
 docker push joonhyung/jjalbot:latest
 
 # Pull the new image
-X_REGISTRY_AUTH=$(echo -n "{
-  \"username\": \"${DOCKER_USER}\",
-  \"password\": \"${DOCKER_PASSWORD}\"
-}" | base64)
+X_REGISTRY_AUTH=$(printf '{
+  "username": "%s",
+  "password": "%s"
+}' "${DOCKER_USER}" "${DOCKER_PASSWORD}" | base64)
 curl -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" \
      "${DOCKER_API_URL}/images/joonhyung%2Fjjalbot%3Alatest/tag?repo=joonhyung%2Fjjalbot&tag=legacy"
 curl -f -X POST -H "Authorization: Bearer ${DOCKER_API_TOKEN}" -H "X-Registry-Auth: ${X_REGISTRY_AUTH}" \
