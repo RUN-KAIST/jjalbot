@@ -176,6 +176,11 @@ MEDIA_URL = "/jjalbot/media/"
 FILE_UPLOAD_PERMISSIONS = 0o644
 
 
+# Celery
+
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+
+
 # Logging
 
 LOGGING = {
