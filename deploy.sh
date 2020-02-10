@@ -12,7 +12,7 @@ DOCKER_API_URL="${PORTAINER_API_URL}/endpoints/1/docker"
 PORTAINER_API_TOKEN=$(curl -f -X POST -H "Content-type: application/json" -d "{
   \"Username\": \"${PORTAINER_USER}\",
   \"Password\": \"${PORTAINER_PASSWORD}\"
-}" POST "${PORTAINER_API_URL}/auth" | jq .jwt)
+}" "${PORTAINER_API_URL}/auth" | jq -r .jwt)
 
 # Pull the new image
 X_REGISTRY_AUTH=$(printf '{
