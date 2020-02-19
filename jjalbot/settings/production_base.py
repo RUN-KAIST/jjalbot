@@ -40,6 +40,8 @@ DATABASES = {
     }
 }
 
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
