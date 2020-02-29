@@ -14,6 +14,9 @@ https://docs.djangoproject.com/en/2.1/ref/settings/
 from .production_base import *
 
 
+ACCOUNT_DEFAULT_HTTP_PROTOCOL = 'https'
+
+
 SILENCED_SYSTEM_CHECKS = ['security.W008']
 
 
