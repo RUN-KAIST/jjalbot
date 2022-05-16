@@ -6,7 +6,7 @@ authors = ["Joonhyung Shin <tonyshin@kaist.ac.kr>"]
 
 [tool.poetry.dependencies]
 python = "^3.6"
-Django = "^3.0.3"
+Django = "^3.1.14"
 celery = "^4.4.0"
 Pillow = "^7.0.0"
 gunicorn = "^20.0.4"
